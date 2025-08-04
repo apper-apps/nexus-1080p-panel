@@ -297,26 +297,26 @@ currentMonthSales,
         </div>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+{/* Metrics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4 lg:gap-6">
         {/* Total Contacts */}
         <Card 
           className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
           onClick={() => handleMetricClick('contacts')}
         >
-          <CardContent className="p-6">
+          <CardContent className="p-4 lg:p-6">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-gray-600">Total Contacts</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics.totalContacts}</p>
+                <p className="text-2xl lg:text-3xl font-bold text-gray-900 truncate">{metrics.totalContacts}</p>
               </div>
-              <div className="h-12 w-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <ApperIcon name="Users" className="h-6 w-6 text-white" />
+              <div className="h-10 w-10 lg:h-12 lg:w-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 ml-3">
+                <ApperIcon name="Users" className="h-5 w-5 lg:h-6 lg:w-6 text-white" />
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-2 flex items-center">
-              <ApperIcon name="MousePointer2" className="h-3 w-3 mr-1" />
-              Click to view all contacts
+              <ApperIcon name="MousePointer2" className="h-3 w-3 mr-1 flex-shrink-0" />
+              <span className="truncate">Click to view all contacts</span>
             </p>
           </CardContent>
         </Card>
@@ -326,19 +326,19 @@ currentMonthSales,
           className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
           onClick={() => handleMetricClick('deals')}
         >
-          <CardContent className="p-6">
+          <CardContent className="p-4 lg:p-6">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-gray-600">Active Deals</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics.activeDeals}</p>
+                <p className="text-2xl lg:text-3xl font-bold text-gray-900 truncate">{metrics.activeDeals}</p>
               </div>
-              <div className="h-12 w-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                <ApperIcon name="TrendingUp" className="h-6 w-6 text-white" />
+              <div className="h-10 w-10 lg:h-12 lg:w-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0 ml-3">
+                <ApperIcon name="TrendingUp" className="h-5 w-5 lg:h-6 lg:w-6 text-white" />
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-2 flex items-center">
-              <ApperIcon name="MousePointer2" className="h-3 w-3 mr-1" />
-              Click to view all deals
+              <ApperIcon name="MousePointer2" className="h-3 w-3 mr-1 flex-shrink-0" />
+              <span className="truncate">Click to view all deals</span>
             </p>
           </CardContent>
         </Card>
@@ -348,19 +348,19 @@ currentMonthSales,
           className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
           onClick={() => handleMetricClick('target')}
         >
-          <CardContent className="p-6">
+          <CardContent className="p-4 lg:p-6">
             <div className="flex items-center justify-between mb-2">
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-gray-600">Monthly Target</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-xl lg:text-2xl xl:text-3xl font-bold text-gray-900 truncate">
                   {formatCurrency(metrics.currentMonthSales)}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-xs lg:text-sm text-gray-500 truncate">
                   of {formatCurrency(metrics.monthlySalesTarget)}
                 </p>
               </div>
-              <div className="h-12 w-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <ApperIcon name="Target" className="h-6 w-6 text-white" />
+              <div className="h-10 w-10 lg:h-12 lg:w-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 ml-3">
+                <ApperIcon name="Target" className="h-5 w-5 lg:h-6 lg:w-6 text-white" />
               </div>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
@@ -370,8 +370,8 @@ currentMonthSales,
               ></div>
             </div>
             <p className="text-xs text-gray-500 mt-2 flex items-center">
-              <ApperIcon name="MousePointer2" className="h-3 w-3 mr-1" />
-              {getProgressPercentage().toFixed(1)}% complete
+              <ApperIcon name="MousePointer2" className="h-3 w-3 mr-1 flex-shrink-0" />
+              <span className="truncate">{getProgressPercentage().toFixed(1)}% complete</span>
             </p>
           </CardContent>
         </Card>
@@ -381,50 +381,53 @@ currentMonthSales,
           className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
           onClick={() => handleMetricClick('winrate')}
         >
-          <CardContent className="p-6">
+          <CardContent className="p-4 lg:p-6">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-gray-600">Win Rate</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics.winRate}%</p>
+                <p className="text-2xl lg:text-3xl font-bold text-gray-900 truncate">{metrics.winRate}%</p>
               </div>
-              <div className="h-12 w-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
-                <ApperIcon name="Award" className="h-6 w-6 text-white" />
+              <div className="h-10 w-10 lg:h-12 lg:w-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0 ml-3">
+                <ApperIcon name="Award" className="h-5 w-5 lg:h-6 lg:w-6 text-white" />
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-2 flex items-center">
-              <ApperIcon name="MousePointer2" className="h-3 w-3 mr-1" />
-              Click to view closed deals
+              <ApperIcon name="MousePointer2" className="h-3 w-3 mr-1 flex-shrink-0" />
+              <span className="truncate">Click to view closed deals</span>
             </p>
           </CardContent>
         </Card>
+      </div>
 
+      {/* Secondary Grid for Charts and Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mt-6">
         {/* Sales Pipeline Chart */}
-        <Card className="md:col-span-2">
+        <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ApperIcon name="PieChart" className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
+              <ApperIcon name="PieChart" className="h-4 w-4 lg:h-5 lg:w-5" />
               Sales Pipeline
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-80 flex items-center justify-center">
+            <div className="h-64 lg:h-80 flex items-center justify-center">
               {metrics.pipelineData.length > 0 ? (
                 <Chart
                   options={chartOptions}
                   series={metrics.pipelineData}
                   type="donut"
-                  height={280}
+                  height="100%"
                 />
               ) : (
                 <div className="text-center text-gray-500">
-                  <ApperIcon name="PieChart" className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>No pipeline data available</p>
-</div>
+                  <ApperIcon name="PieChart" className="h-8 w-8 lg:h-12 lg:w-12 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No pipeline data available</p>
+                </div>
               )}
             </div>
             <p className="text-xs text-gray-500 text-center mt-2 flex items-center justify-center">
-              <ApperIcon name="MousePointer2" className="h-3 w-3 mr-1" />
-              Click segments to filter deals by stage
+              <ApperIcon name="MousePointer2" className="h-3 w-3 mr-1 flex-shrink-0" />
+              <span className="truncate">Click segments to filter deals by stage</span>
             </p>
           </CardContent>
         </Card>
@@ -432,13 +435,13 @@ currentMonthSales,
         {/* Recent Activity Feed */}
         <Card className="lg:col-span-1">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <ApperIcon name="Activity" className="h-5 w-5 text-primary" />
+            <CardTitle className="text-base lg:text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <ApperIcon name="Activity" className="h-4 w-4 lg:h-5 lg:w-5 text-primary" />
               Recent Activity
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="space-y-4 max-h-96 overflow-y-auto">
+            <div className="space-y-3 lg:space-y-4 max-h-80 lg:max-h-96 overflow-y-auto">
               {metrics.recentActivities.length > 0 ? (
                 metrics.recentActivities.map((activity) => {
                   const getActivityIcon = (type) => {
@@ -478,7 +481,7 @@ currentMonthSales,
                   return (
                     <div 
                       key={activity.Id}
-                      className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+                      className="flex items-start gap-2 lg:gap-3 p-2 lg:p-3 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
                       onClick={() => {
                         if (activity.entityType === 'contact') {
                           navigate('/contacts')
@@ -487,19 +490,19 @@ currentMonthSales,
                         }
                       }}
                     >
-                      <div className={`p-2 rounded-full ${getActivityColor(activity.type)}`}>
-                        <ApperIcon name={getActivityIcon(activity.type)} className="h-4 w-4" />
+                      <div className={`p-1.5 lg:p-2 rounded-full ${getActivityColor(activity.type)} flex-shrink-0`}>
+                        <ApperIcon name={getActivityIcon(activity.type)} className="h-3 w-3 lg:h-4 lg:w-4" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-medium text-gray-900 truncate">
+                        <div className="flex items-center justify-between gap-2">
+                          <h4 className="text-xs lg:text-sm font-medium text-gray-900 truncate">
                             {activity.title}
                           </h4>
                           <span className="text-xs text-gray-500 flex-shrink-0">
                             {formatRelativeTime(activity.date)}
                           </span>
                         </div>
-<p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">
                           {activity.description}
                         </p>
                         <div className="flex items-center gap-2 mt-2">
@@ -508,10 +511,10 @@ currentMonthSales,
                               name={activity.entityType === 'contact' ? 'User' : activity.entityType === 'deal' ? 'TrendingUp' : 'Building2'} 
                               className="h-3 w-3 mr-1" 
                             />
-                            {activity.entityType}
+                            <span className="truncate">{activity.entityType}</span>
                           </span>
                           {activity.outcome && (
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-gray-500 truncate">
                               • {activity.outcome}
                             </span>
                           )}
@@ -521,28 +524,30 @@ currentMonthSales,
                   )
                 })
               ) : (
-                <div className="text-center py-8">
-                  <ApperIcon name="Activity" className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-                  <p className="text-sm text-gray-500">No recent activities</p>
+                <div className="text-center py-6 lg:py-8">
+                  <ApperIcon name="Activity" className="h-8 w-8 lg:h-12 lg:w-12 mx-auto text-gray-300 mb-3" />
+                  <p className="text-xs lg:text-sm text-gray-500">No recent activities</p>
                 </div>
               )}
             </div>
           </CardContent>
         </Card>
+      </div>
 
-        {/* Top Performers Section */}
-        <Card className="col-span-12">
+      {/* Top Performers Section */}
+      <div className="mt-6">
+        <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ApperIcon name="Award" className="h-5 w-5 text-primary" />
+            <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
+              <ApperIcon name="Award" className="h-4 w-4 lg:h-5 lg:w-5 text-primary" />
               Top Performers
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
               {/* Top Contacts by Deal Value */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <h3 className="text-base lg:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <ApperIcon name="User" className="h-4 w-4 text-primary" />
                   Top Contacts by Deal Value
                 </h3>
@@ -550,25 +555,25 @@ currentMonthSales,
                   {metrics.topPerformers.contacts.length > 0 ? (
                     metrics.topPerformers.contacts.map((contact, index) => (
                       <div key={contact.name} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:from-primary/5 hover:to-secondary/5 transition-all duration-200">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div className="flex items-center justify-center w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-gradient-to-r from-primary to-secondary text-white text-xs lg:text-sm font-semibold flex-shrink-0">
                             {index + 1}
                           </div>
-                          <div>
-                            <div className="font-medium text-gray-900">{contact.name}</div>
-                            <div className="text-sm text-gray-600">{contact.company || 'No company'}</div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-medium text-gray-900 text-sm lg:text-base truncate">{contact.name}</div>
+                            <div className="text-xs lg:text-sm text-gray-600 truncate">{contact.company || 'No company'}</div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="font-semibold text-primary">{formatCurrency(contact.totalValue)}</div>
+                        <div className="text-right flex-shrink-0 ml-3">
+                          <div className="font-semibold text-primary text-sm lg:text-base">{formatCurrency(contact.totalValue)}</div>
                           <div className="text-xs text-gray-500">{contact.dealCount} deal{contact.dealCount !== 1 ? 's' : ''}</div>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8">
-                      <ApperIcon name="User" className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-                      <p className="text-sm text-gray-500">No contact performance data available</p>
+                    <div className="text-center py-6 lg:py-8">
+                      <ApperIcon name="User" className="h-8 w-8 lg:h-12 lg:w-12 mx-auto text-gray-300 mb-3" />
+                      <p className="text-xs lg:text-sm text-gray-500">No contact performance data available</p>
                     </div>
                   )}
                 </div>
@@ -576,7 +581,7 @@ currentMonthSales,
 
               {/* Top Companies by Opportunities */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <h3 className="text-base lg:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <ApperIcon name="Building2" className="h-4 w-4 text-primary" />
                   Top Companies by Opportunities
                 </h3>
@@ -584,25 +589,25 @@ currentMonthSales,
                   {metrics.topPerformers.companies.length > 0 ? (
                     metrics.topPerformers.companies.map((company, index) => (
                       <div key={company.company} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:from-primary/5 hover:to-secondary/5 transition-all duration-200">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-secondary to-accent text-white text-sm font-semibold">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div className="flex items-center justify-center w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-gradient-to-r from-secondary to-accent text-white text-xs lg:text-sm font-semibold flex-shrink-0">
                             {index + 1}
                           </div>
-                          <div>
-                            <div className="font-medium text-gray-900">{company.company}</div>
-                            <div className="text-sm text-gray-600">Total value: {formatCurrency(company.totalValue)}</div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-medium text-gray-900 text-sm lg:text-base truncate">{company.company}</div>
+                            <div className="text-xs lg:text-sm text-gray-600 truncate">Total value: {formatCurrency(company.totalValue)}</div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="font-semibold text-secondary">{company.opportunityCount}</div>
+                        <div className="text-right flex-shrink-0 ml-3">
+                          <div className="font-semibold text-secondary text-sm lg:text-base">{company.opportunityCount}</div>
                           <div className="text-xs text-gray-500">opportunities</div>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8">
-                      <ApperIcon name="Building2" className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-                      <p className="text-sm text-gray-500">No company performance data available</p>
+                    <div className="text-center py-6 lg:py-8">
+                      <ApperIcon name="Building2" className="h-8 w-8 lg:h-12 lg:w-12 mx-auto text-gray-300 mb-3" />
+                      <p className="text-xs lg:text-sm text-gray-500">No company performance data available</p>
                     </div>
                   )}
                 </div>
