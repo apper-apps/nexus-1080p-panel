@@ -63,11 +63,17 @@ const handleActivityAdded = (newActivity) => {
     return upcomingActivities[0] || null
   }
 
-  const formatEmployeeCount = (count) => {
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}k`;
+const formatEmployeeCount = (count) => {
+    // Handle null, undefined, or non-numeric values
+    if (count == null || isNaN(count) || count === '') {
+      return '0';
     }
-    return count.toString();
+    
+    const numericCount = Number(count);
+    if (numericCount >= 1000) {
+      return `${(numericCount / 1000).toFixed(1)}k`;
+    }
+    return numericCount.toString();
   };
 
   const formatWebsite = (website) => {
