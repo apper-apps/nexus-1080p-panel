@@ -37,13 +37,42 @@ const [contacts, setContacts] = useState([])
     endDate: '',
     activityType: ''
   })
-const loadContacts = async () => {
+const loadContacts = async (page = 1) => {
     try {
       setLoading(true)
       setError("")
-      const data = await contactService.getAll()
-      setContacts(data)
-      setFilteredContacts(data)
+      
+      const offset = (page - 1) * itemsPerPage
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "email" } },
+          { field: { Name: "phone" } },
+          { field: { Name: "company" } },
+          { field: { Name: "companyName" } },
+          { field: { Name: "lastContactDate" } },
+          { field: { Name: "notes" } },
+          { field: { Name: "jobTitle" } },
+          { field: { Name: "companyId" } }
+        ],
+        pagingInfo: {
+          limit: itemsPerPage,
+          offset: offset
+        },
+        orderBy: [
+          {
+            fieldName: "Name",
+            sorttype: "ASC"
+          }
+        ]
+      }
+
+      const response = await contactService.getAll(params)
+      if (response && response.data) {
+        setContacts(response.data)
+        setFilteredContacts(response.data)
+        setTotalRecords(response.total || response.data.length)
+      }
     } catch (err) {
       setError("Failed to load contacts. Please try again.")
       console.error("Error loading contacts:", err)
@@ -74,7 +103,7 @@ const handleSearch = useCallback(async (query) => {
     filterContacts(searchQuery, newFilters)
   }, [searchQuery, filters])
 
-  const handlePageChange = (newPage) => {
+const handlePageChange = (newPage) => {
     setCurrentPage(newPage)
     loadContacts(newPage)
   }
