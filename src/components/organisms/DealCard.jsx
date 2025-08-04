@@ -43,8 +43,8 @@ return (
       <CardContent className="p-4">
         <div className="space-y-3">
           {/* Deal Name */}
-          <h3 className="font-medium text-gray-900 text-sm leading-tight line-clamp-2">
-            {deal.name}
+<h3 className="font-medium text-gray-900 text-sm leading-tight line-clamp-2">
+            {deal.Name}
           </h3>
 
           {/* Deal Value */}
@@ -58,8 +58,8 @@ return (
           {/* Contact */}
           <div className="flex items-center gap-2">
             <ApperIcon name="User" size={14} className="text-gray-500" />
-            <span className="text-sm text-gray-600 truncate">
-              {deal.contact}
+<span className="text-sm text-gray-600 truncate">
+              {deal.contactName}
             </span>
           </div>
 

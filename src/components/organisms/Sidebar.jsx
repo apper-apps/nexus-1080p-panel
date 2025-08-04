@@ -1,9 +1,26 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import NavItem from "@/components/molecules/NavItem"
 import ApperIcon from "@/components/ApperIcon"
+import Button from "@/components/atoms/Button"
 import { cn } from "@/utils/cn"
+import { AuthContext } from "../../App"
 
+const LogoutButton = () => {
+  const { logout } = useContext(AuthContext);
+  
+  return (
+    <Button
+      onClick={logout}
+      variant="ghost"
+      size="sm"
+      className="p-1 h-6 w-6 hover:bg-red-50 hover:text-red-600"
+      title="Logout"
+    >
+      <ApperIcon name="LogOut" className="h-3 w-3" />
+    </Button>
+  );
+};
 const navigationItems = [
   { to: "/contacts", icon: "Users", label: "Contacts" },
   { to: "/deals", icon: "TrendingUp", label: "Deals" },
@@ -55,7 +72,7 @@ const Sidebar = () => {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-gray-200">
+<div className="p-4 border-t border-gray-200">
           <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-gray-50 to-gray-100">
             <div className="h-8 w-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
               <ApperIcon name="User" className="h-4 w-4 text-white" />
@@ -64,6 +81,7 @@ const Sidebar = () => {
               <p className="text-sm font-medium text-gray-900 truncate">Sales Team</p>
               <p className="text-xs text-gray-600 truncate">sales@company.com</p>
             </div>
+            <LogoutButton />
           </div>
         </div>
       </div>
@@ -112,7 +130,7 @@ const Sidebar = () => {
                 ))}
               </nav>
 
-              <div className="p-4 border-t border-gray-200">
+<div className="p-4 border-t border-gray-200">
                 <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-gray-50 to-gray-100">
                   <div className="h-8 w-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
                     <ApperIcon name="User" className="h-4 w-4 text-white" />
@@ -121,6 +139,7 @@ const Sidebar = () => {
                     <p className="text-sm font-medium text-gray-900 truncate">Sales Team</p>
                     <p className="text-xs text-gray-600 truncate">sales@company.com</p>
                   </div>
+                  <LogoutButton />
                 </div>
               </div>
             </motion.div>

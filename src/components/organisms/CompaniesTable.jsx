@@ -146,8 +146,8 @@ const CompaniesTable = ({
                       </div>
                     </div>
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {company.name}
+<div className="text-sm font-medium text-gray-900">
+                        {company.Name}
                       </div>
                       {company.website && (
                         <div className="text-sm text-gray-500">

@@ -88,7 +88,7 @@ const SortHeader = ({ field, children }) => (
           <tbody className="bg-white divide-y divide-gray-100">
             {sortedContacts.map((contact) => (
 <tr
-                key={contact.Id}
+key={contact.Id}
                 className={cn(
                   "hover:bg-gradient-to-r hover:from-primary/5 hover:to-secondary/5 transition-all duration-200 hover:border-l-4 hover:border-primary",
                   selectedContact?.Id === contact.Id 
@@ -103,19 +103,19 @@ const SortHeader = ({ field, children }) => (
                   <div className="flex items-center">
                     <div className="h-8 w-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mr-3">
                       <span className="text-white text-sm font-medium">
-                        {contact.name.split(" ").map(n => n[0]).join("").toUpperCase()}
+                        {contact.Name ? contact.Name.split(" ").map(n => n[0]).join("").toUpperCase() : ''}
                       </span>
                     </div>
-                    <div className="text-sm font-medium text-gray-900">{contact.name}</div>
+                    <div className="text-sm font-medium text-gray-900">{contact.Name}</div>
                   </div>
                 </td>
-<td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {contact.companyName || contact.company ? (
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  {contact.companyName ? (
                     <button
-                      onClick={() => onCompanySelect && onCompanySelect(contact.companyId || contact.company)}
+                      onClick={() => onCompanySelect && onCompanySelect(contact.companyId)}
                       className="text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200 text-left"
                     >
-                      {contact.companyName || contact.company}
+                      {contact.companyName}
                     </button>
                   ) : (
                     <span className="text-gray-400">No company</span>
@@ -137,10 +137,10 @@ const SortHeader = ({ field, children }) => (
                   className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 cursor-pointer"
                   onClick={() => onContactSelect(contact)}
                 >
-                  {format(new Date(contact.lastContactDate), "MMM d, yyyy")}
+                  {contact.lastContactDate ? format(new Date(contact.lastContactDate), "MMM d, yyyy") : 'N/A'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-<div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
