@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { toast } from "react-hot-toast";
-import { companyService } from "@/services/api/companyService";
-import ApperIcon from "@/components/ApperIcon";
-import FormField from "@/components/molecules/FormField";
-import Button from "@/components/atoms/Button";
+import React, { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { toast } from 'react-toastify'
+import { companyService } from '@/services/api/companyService'
+import ApperIcon from '@/components/ApperIcon'
+import FormField from '@/components/molecules/FormField'
+import Button from '@/components/atoms/Button'
 const AddContactModal = ({ isOpen, onClose, onSubmit, editingContact = null, isEditMode = false }) => {
   const [companies, setCompanies] = useState([])
   const [loadingCompanies, setLoadingCompanies] = useState(false)
