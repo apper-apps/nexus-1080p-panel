@@ -307,15 +307,15 @@ const formatEmployeeCount = (count) => {
               {contacts.length > 0 ? (
                 <div className="space-y-3">
                   {contacts.map((contact) => (
-<div key={contact.Id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div key={contact.Id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                       <div className="h-10 w-10 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-full flex items-center justify-center">
                         <span className="text-indigo-600 text-sm font-medium">
-                          {contact.Name?.split(" ").map(n => n[0]).join("").toUpperCase() || "?"}
+                          {contact.name.split(" ").map(n => n[0]).join("").toUpperCase()}
                         </span>
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">{contact.Name}</p>
-                        <p className="text-xs text-gray-500">{contact.email || 'N/A'}</p>
+                        <p className="text-sm font-medium text-gray-900">{contact.name}</p>
+                        <p className="text-xs text-gray-500">{contact.email}</p>
                       </div>
                       <div className="flex gap-1">
                         <Button
