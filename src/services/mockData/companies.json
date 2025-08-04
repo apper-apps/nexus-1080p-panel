@@ -1,0 +1,82 @@
+[
+  {
+    "Id": 1,
+    "name": "TechCorp Solutions",
+    "industry": "Technology",
+    "employeeCount": 250,
+    "website": "https://techcorp.com",
+    "address": "123 Innovation Drive, Silicon Valley, CA 94025",
+    "description": "Leading provider of enterprise software solutions and cloud infrastructure services.",
+    "contactCount": 8
+  },
+  {
+    "Id": 2,
+    "name": "Global Manufacturing Inc",
+    "industry": "Manufacturing",
+    "employeeCount": 1200,
+    "website": "https://globalmanufacturing.com",
+    "address": "456 Industrial Blvd, Detroit, MI 48201",
+    "description": "Multinational manufacturing company specializing in automotive parts and industrial equipment.",
+    "contactCount": 15
+  },
+  {
+    "Id": 3,
+    "name": "HealthCare Partners",
+    "industry": "Healthcare",
+    "employeeCount": 850,
+    "website": "https://healthcarepartners.org",
+    "address": "789 Medical Center Dr, Houston, TX 77030",
+    "description": "Comprehensive healthcare network providing medical services and pharmaceutical solutions.",
+    "contactCount": 12
+  },
+  {
+    "Id": 4,
+    "name": "EduTech Innovations",
+    "industry": "Education",
+    "employeeCount": 45,
+    "website": "https://edutechinnovations.com",
+    "address": "321 Learning Lane, Boston, MA 02101",
+    "description": "Educational technology startup creating interactive learning platforms for K-12 schools.",
+    "contactCount": 3
+  },
+  {
+    "Id": 5,
+    "name": "Green Energy Solutions",
+    "industry": "Energy",
+    "employeeCount": 180,
+    "website": "https://greenenergysolutions.com",
+    "address": "654 Renewable Rd, Denver, CO 80202",
+    "description": "Renewable energy company focused on solar and wind power installation and maintenance.",
+    "contactCount": 6
+  },
+  {
+    "Id": 6,
+    "name": "Financial Services Group",
+    "industry": "Finance",
+    "employeeCount": 320,
+    "website": "https://financialservicesgroup.com",
+    "address": "987 Wall Street, New York, NY 10005",
+    "description": "Full-service financial institution offering banking, investment, and insurance solutions.",
+    "contactCount": 22
+  },
+  {
+    "Id": 7,
+    "name": "Retail Dynamics",
+    "industry": "Retail",
+    "employeeCount": 95,
+    "website": "https://retaildynamics.com",
+    "address": "147 Commerce Ave, Chicago, IL 60601",
+    "description": "Retail consulting firm helping businesses optimize their customer experience and operations.",
+    "contactCount": 4
+  },
+  {
+    "Id": 8,
+    "name": "Logistics Pro",
+    "industry": "Transportation",
+    "employeeCount": 430,
+    "website": "https://logisticspro.com",
+    "address": "258 Freight Way, Atlanta, GA 30309",
+    "description": "Supply chain and logistics company providing warehousing and distribution services nationwide.",
+    "contactCount": 9
+  }
+]
