@@ -227,15 +227,13 @@ const handleContactSelect = (contact) => {
     setSelectedContact(null)
   }
 
-  const handleAddContact = async (contactData) => {
+const handleAddContact = async (contactData) => {
     try {
-      const newContact = await contactService.create(contactData)
-      setContacts(prev => [newContact, ...prev])
+      await contactService.create(contactData)
       
-      // Update filtered contacts if no search query
-      if (!searchQuery) {
-        setFilteredContacts(prev => [newContact, ...prev])
-      }
+      // Reload contacts to ensure UI shows current server state
+      // This handles pagination correctly and shows the new contact
+      await loadContacts(currentPage)
       
       toast.success("Contact added successfully!")
     } catch (err) {

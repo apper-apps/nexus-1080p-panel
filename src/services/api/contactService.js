@@ -3,7 +3,7 @@ const tableName = 'app_contact';
 export const contactService = {
   async getAll() {
     try {
-      const params = {
+const params = {
         fields: [
           { field: { Name: "Name" } },
           { field: { Name: "email" } },
@@ -13,7 +13,9 @@ export const contactService = {
           { field: { Name: "notes" } },
           { field: { Name: "lastContactDate" } },
           { field: { Name: "createdAt" } },
-          { field: { Name: "companyId" } }
+          { field: { Name: "companyId" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } }
         ]
       };
 
@@ -43,7 +45,7 @@ export const contactService = {
 
   async getById(id) {
     try {
-      const params = {
+const params = {
         fields: [
           { field: { Name: "Name" } },
           { field: { Name: "email" } },
@@ -53,7 +55,9 @@ export const contactService = {
           { field: { Name: "notes" } },
           { field: { Name: "lastContactDate" } },
           { field: { Name: "createdAt" } },
-          { field: { Name: "companyId" } }
+          { field: { Name: "companyId" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } }
         ]
       };
 
@@ -241,7 +245,7 @@ export const contactService = {
 
   async search(query) {
     try {
-      const params = {
+const params = {
         fields: [
           { field: { Name: "Name" } },
           { field: { Name: "email" } },
@@ -251,7 +255,9 @@ export const contactService = {
           { field: { Name: "notes" } },
           { field: { Name: "lastContactDate" } },
           { field: { Name: "createdAt" } },
-          { field: { Name: "companyId" } }
+          { field: { Name: "companyId" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } }
         ],
         where: query ? [
           {
