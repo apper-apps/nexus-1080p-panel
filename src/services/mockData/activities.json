@@ -1,0 +1,102 @@
+[
+  {
+    "Id": 1,
+    "type": "call",
+    "title": "Initial Contact Call",
+    "description": "Reached out to discuss their requirements for the new CRM system. They seem very interested.",
+    "outcome": "Positive - scheduled follow-up meeting",
+    "date": "2024-01-15T10:30:00.000Z",
+    "entityType": "contact",
+    "entityId": 1,
+    "createdBy": "John Smith",
+    "createdAt": "2024-01-15T10:35:00.000Z"
+  },
+  {
+    "Id": 2,
+    "type": "email",
+    "title": "Proposal Sent",
+    "description": "Sent detailed proposal with pricing and timeline information.",
+    "outcome": "Awaiting response",
+    "date": "2024-01-16T14:20:00.000Z",
+    "entityType": "deal",
+    "entityId": 1,
+    "createdBy": "Sarah Johnson",
+    "createdAt": "2024-01-16T14:25:00.000Z"
+  },
+  {
+    "Id": 3,
+    "type": "meeting",
+    "title": "Product Demo",
+    "description": "Conducted live demo of the CRM platform. Client was impressed with the features.",
+    "outcome": "Very positive - moving to negotiation phase",
+    "date": "2024-01-18T15:00:00.000Z",
+    "entityType": "company",
+    "entityId": 1,
+    "createdBy": "Mike Davis",
+    "createdAt": "2024-01-18T16:00:00.000Z"
+  },
+  {
+    "Id": 4,
+    "type": "task",
+    "title": "Prepare Contract",
+    "description": "Draft and review contract documents for the new client.",
+    "outcome": "In progress",
+    "date": "2024-01-20T09:00:00.000Z",
+    "dueDate": "2024-01-25T17:00:00.000Z",
+    "completed": false,
+    "entityType": "deal",
+    "entityId": 1,
+    "createdBy": "Legal Team",
+    "createdAt": "2024-01-20T09:15:00.000Z"
+  },
+  {
+    "Id": 5,
+    "type": "note",
+    "title": "Client Preferences",
+    "description": "Client prefers cloud-based solution and wants integration with their existing accounting software.",
+    "outcome": "Information recorded",
+    "date": "2024-01-19T11:30:00.000Z",
+    "entityType": "contact",
+    "entityId": 2,
+    "createdBy": "Anna Wilson",
+    "createdAt": "2024-01-19T11:45:00.000Z"
+  },
+  {
+    "Id": 6,
+    "type": "call",
+    "title": "Follow-up Call",
+    "description": "Checked in on their decision timeline and answered additional questions.",
+    "outcome": "Decision expected by end of week",
+    "date": "2024-01-22T16:15:00.000Z",
+    "entityType": "company",
+    "entityId": 2,
+    "createdBy": "Tom Brown",
+    "createdAt": "2024-01-22T16:30:00.000Z"
+  },
+  {
+    "Id": 7,
+    "type": "task",
+    "title": "Technical Assessment",
+    "description": "Evaluate technical requirements and infrastructure needs.",
+    "outcome": "Completed successfully",
+    "date": "2024-01-17T13:00:00.000Z",
+    "dueDate": "2024-01-19T17:00:00.000Z",
+    "completed": true,
+    "entityType": "deal",
+    "entityId": 2,
+    "createdBy": "Tech Team",
+    "createdAt": "2024-01-17T13:10:00.000Z"
+  },
+  {
+    "Id": 8,
+    "type": "email",
+    "title": "Implementation Timeline",
+    "description": "Shared detailed implementation timeline and milestone schedule.",
+    "outcome": "Client approved timeline",
+    "date": "2024-01-21T10:45:00.000Z",
+    "entityType": "contact",
+    "entityId": 3,
+    "createdBy": "Project Manager",
+    "createdAt": "2024-01-21T11:00:00.000Z"
+  }
+]

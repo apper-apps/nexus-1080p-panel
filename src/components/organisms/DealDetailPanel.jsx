@@ -1,15 +1,52 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import Button from '@/components/atoms/Button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/atoms/Card'
 import ApperIcon from '@/components/ApperIcon'
+import ActivityTimeline from '@/components/organisms/ActivityTimeline'
+import AddActivityModal from '@/components/organisms/AddActivityModal'
 import { dealService } from '@/services/api/dealService'
-
+import { activityService } from '@/services/api/activityService'
 const DealDetailPanel = ({ deal, onClose, onUpdate }) => {
-  const [loading, setLoading] = useState(false)
+const [loading, setLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState('details')
+  const [activities, setActivities] = useState([])
+  const [activitiesLoading, setActivitiesLoading] = useState(false)
+  const [showAddActivity, setShowAddActivity] = useState(false)
 
+  useEffect(() => {
+    if (activeTab === 'activities') {
+      loadActivities()
+    }
+  }, [activeTab, deal.Id])
+
+  const loadActivities = async () => {
+    try {
+      setActivitiesLoading(true)
+      const dealActivities = await activityService.getByEntity('deal', deal.Id)
+      setActivities(dealActivities)
+    } catch (error) {
+      console.error('Error loading activities:', error)
+      toast.error('Failed to load activities')
+    } finally {
+      setActivitiesLoading(false)
+    }
+  }
+
+  const handleActivityAdded = (newActivity) => {
+    setActivities(prev => [newActivity, ...prev])
+    setActiveTab('activities')
+  }
+
+  const handleActivityUpdate = (updatedActivity) => {
+    setActivities(prev => 
+      prev.map(activity => 
+        activity.Id === updatedActivity.Id ? updatedActivity : activity
+      )
+    )
+  }
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -71,158 +108,225 @@ const DealDetailPanel = ({ deal, onClose, onUpdate }) => {
 
   const currentStage = getStageInfo(deal.stage)
 
-  return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex justify-end">
-      <motion.div
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-        className="w-full max-w-2xl bg-white shadow-xl overflow-y-auto"
-      >
-        <div className="sticky top-0 bg-white border-b border-gray-200 p-6 z-10">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">{deal.name}</h2>
-              <div className="flex items-center gap-2 mt-2">
-                <div className={`w-3 h-3 rounded-full ${currentStage.color}`}></div>
-                <span className={`font-medium ${currentStage.textColor}`}>
-                  {currentStage.name}
-                </span>
+return (
+    <>
+      <div className="fixed inset-0 bg-black/50 z-50 flex justify-end">
+        <motion.div
+          initial={{ x: '100%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '100%' }}
+          transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+          className="w-full max-w-2xl bg-white shadow-xl overflow-y-auto"
+        >
+          <div className="sticky top-0 bg-white border-b border-gray-200 p-6 z-10">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">{deal.name}</h2>
+                <div className="flex items-center gap-2 mt-2">
+                  <div className={`w-3 h-3 rounded-full ${currentStage.color}`}></div>
+                  <span className={`font-medium ${currentStage.textColor}`}>
+                    {currentStage.name}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button 
+                  onClick={() => setShowAddActivity(true)}
+                  variant="secondary" 
+                  size="sm"
+                  className="hover:bg-gray-100"
+                >
+                  <ApperIcon name="Plus" size={16} />
+                  Log Activity
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onClose}
+                  className="hover:bg-gray-100"
+                >
+                  <ApperIcon name="X" size={20} />
+                </Button>
               </div>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={onClose}
-              className="hover:bg-gray-100"
-            >
-              <ApperIcon name="X" size={20} />
-            </Button>
+
+            {/* Tabs */}
+            <div className="flex border-b border-gray-200 mt-4">
+              <button
+                onClick={() => setActiveTab('details')}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'details'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Details
+              </button>
+              <button
+                onClick={() => setActiveTab('activities')}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'activities'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Activities ({activities.length})
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className="p-6 space-y-6">
-          {/* Deal Overview */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ApperIcon name="DollarSign" size={20} />
-                Deal Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Value</label>
-                  <p className="text-2xl font-bold text-green-600">{formatCurrency(deal.value)}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Contact</label>
-                  <p className="text-lg font-medium">{deal.contact}</p>
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-500">Description</label>
-                <p className="text-gray-900 mt-1">{deal.description}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Created</label>
-                  <p className="text-gray-900">{format(new Date(deal.createdAt), 'MMM d, yyyy')}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Last Updated</label>
-                  <p className="text-gray-900">{format(new Date(deal.stageUpdatedAt), 'MMM d, yyyy')}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Stage History */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ApperIcon name="History" size={20} />
-                Stage History
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {stageHistory.map((entry, index) => {
-                  const stageInfo = getStageInfo(entry.stage)
-                  return (
-                    <div key={index} className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-full ${stageInfo.color} flex items-center justify-center`}>
-                        <div className="w-3 h-3 bg-white rounded-full"></div>
+          <div className="p-6">
+            {activeTab === 'details' && (
+              <div className="space-y-6">
+                {/* Deal Overview */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <ApperIcon name="DollarSign" size={20} />
+                      Deal Overview
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Value</label>
+                        <p className="text-2xl font-bold text-green-600">{formatCurrency(deal.value)}</p>
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium">{stageInfo.name}</span>
-                          <span className="text-sm text-gray-500">
-                            {format(new Date(entry.date), 'MMM d, yyyy')}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600">Updated by {entry.user}</p>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Contact</label>
+                        <p className="text-lg font-medium">{deal.contact}</p>
                       </div>
                     </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Description</label>
+                      <p className="text-gray-900 mt-1">{deal.description}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Created</label>
+                        <p className="text-gray-900">{format(new Date(deal.createdAt), 'MMM d, yyyy')}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Last Updated</label>
+                        <p className="text-gray-900">{format(new Date(deal.stageUpdatedAt), 'MMM d, yyyy')}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-          {/* Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ApperIcon name="Settings" size={20} />
-                Actions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-3">
-                {deal.stage !== 'closed' && (
-                  <Button 
-                    onClick={handleMarkAsClosed}
-                    disabled={loading}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    <ApperIcon name="CheckCircle" size={16} />
-                    Mark as Closed
-                  </Button>
-                )}
-                <Button 
-                  variant="outline"
-                  onClick={() => toast.info('Edit functionality coming soon')}
-                  disabled={loading}
-                >
-                  <ApperIcon name="Edit" size={16} />
-                  Edit Deal
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => toast.info('Contact functionality coming soon')}
-                  disabled={loading}
-                >
-                  <ApperIcon name="Phone" size={16} />
-                  Contact Client
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={handleDelete}
-                  disabled={loading}
-                  className="text-red-600 border-red-300 hover:bg-red-50"
-                >
-                  <ApperIcon name="Trash2" size={16} />
-                  Delete Deal
-                </Button>
+                {/* Stage History */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <ApperIcon name="History" size={20} />
+                      Stage History
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {stageHistory.map((entry, index) => {
+                        const stageInfo = getStageInfo(entry.stage)
+                        return (
+                          <div key={index} className="flex items-center gap-4">
+                            <div className={`w-8 h-8 rounded-full ${stageInfo.color} flex items-center justify-center`}>
+                              <div className="w-3 h-3 bg-white rounded-full"></div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium">{stageInfo.name}</span>
+                                <span className="text-sm text-gray-500">
+                                  {format(new Date(entry.date), 'MMM d, yyyy')}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-600">Updated by {entry.user}</p>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Actions */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <ApperIcon name="Settings" size={20} />
+                      Actions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-3">
+                      {deal.stage !== 'closed' && (
+                        <Button 
+                          onClick={handleMarkAsClosed}
+                          disabled={loading}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <ApperIcon name="CheckCircle" size={16} />
+                          Mark as Closed
+                        </Button>
+                      )}
+                      <Button 
+                        variant="outline"
+                        onClick={() => toast.info('Edit functionality coming soon')}
+                        disabled={loading}
+                      >
+                        <ApperIcon name="Edit" size={16} />
+                        Edit Deal
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        onClick={() => toast.info('Contact functionality coming soon')}
+                        disabled={loading}
+                      >
+                        <ApperIcon name="Phone" size={16} />
+                        Contact Client
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        onClick={handleDelete}
+                        disabled={loading}
+                        className="text-red-600 border-red-300 hover:bg-red-50"
+                      >
+                        <ApperIcon name="Trash2" size={16} />
+                        Delete Deal
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </motion.div>
-    </div>
+            )}
+
+            {activeTab === 'activities' && (
+              <div>
+                {activitiesLoading ? (
+                  <div className="text-center py-8">
+                    <ApperIcon name="Loader2" className="h-6 w-6 animate-spin mx-auto mb-2 text-gray-400" />
+                    <p className="text-sm text-gray-500">Loading activities...</p>
+                  </div>
+                ) : (
+                  <ActivityTimeline
+                    entityType="deal"
+                    entityId={deal.Id}
+                    activities={activities}
+                    onActivityUpdate={handleActivityUpdate}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </div>
+
+      <AddActivityModal
+        isOpen={showAddActivity}
+        onClose={() => setShowAddActivity(false)}
+        entityType="deal"
+        entityId={deal.Id}
+        onActivityAdded={handleActivityAdded}
+      />
+    </>
   )
 }
 
