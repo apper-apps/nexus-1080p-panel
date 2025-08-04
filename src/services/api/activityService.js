@@ -5,9 +5,6 @@ let activities = [...activitiesData]
 // Utility function to simulate API delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
-// Utility function to simulate API delay
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-
 export const activityService = {
   async getAll() {
     await delay(300)
