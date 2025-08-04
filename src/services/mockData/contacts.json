@@ -1,0 +1,182 @@
+[
+  {
+    "Id": 1,
+    "name": "Sarah Johnson",
+    "email": "sarah.johnson@techcorp.com",
+    "phone": "+1 (555) 123-4567",
+    "company": "TechCorp Solutions",
+    "lastContactDate": "2024-01-15",
+    "notes": "Interested in enterprise package. Follow up next quarter.",
+    "createdAt": "2023-08-15"
+  },
+  {
+    "Id": 2,
+    "name": "Michael Chen",
+    "email": "m.chen@innovateplus.com",
+    "phone": "+1 (555) 234-5678",
+    "company": "InnovatePlus",
+    "lastContactDate": "2024-01-12",
+    "notes": "Current client - renewal discussion in March.",
+    "createdAt": "2023-06-22"
+  },
+  {
+    "Id": 3,
+    "name": "Emily Rodriguez",
+    "email": "e.rodriguez@globaltech.com",
+    "phone": "+1 (555) 345-6789",
+    "company": "Global Tech Industries",
+    "lastContactDate": "2024-01-10",
+    "notes": "New lead from conference. Very interested in demo.",
+    "createdAt": "2024-01-10"
+  },
+  {
+    "Id": 4,
+    "name": "David Wilson",
+    "email": "david.wilson@startupventure.io",
+    "phone": "+1 (555) 456-7890",
+    "company": "Startup Venture",
+    "lastContactDate": "2024-01-08",
+    "notes": "Small startup looking for growth solutions.",
+    "createdAt": "2023-11-30"
+  },
+  {
+    "Id": 5,
+    "name": "Lisa Park",
+    "email": "l.park@megacorp.com",
+    "phone": "+1 (555) 567-8901",
+    "company": "MegaCorp International",
+    "lastContactDate": "2024-01-05",
+    "notes": "Enterprise client - contract negotiation in progress.",
+    "createdAt": "2023-04-18"
+  },
+  {
+    "Id": 6,
+    "name": "Robert Thompson",
+    "email": "r.thompson@digitalfirst.com",
+    "phone": "+1 (555) 678-9012",
+    "company": "Digital First Agency",
+    "lastContactDate": "2024-01-03",
+    "notes": "Referred by Sarah Johnson. Interested in marketing tools.",
+    "createdAt": "2023-12-15"
+  },
+  {
+    "Id": 7,
+    "name": "Amanda Foster",
+    "email": "amanda@creativestudio.com",
+    "phone": "+1 (555) 789-0123",
+    "company": "Creative Studio Co",
+    "lastContactDate": "2023-12-28",
+    "notes": "Design agency looking for project management solutions.",
+    "createdAt": "2023-09-08"
+  },
+  {
+    "Id": 8,
+    "name": "James Martinez",
+    "email": "j.martinez@retailchain.com",
+    "phone": "+1 (555) 890-1234",
+    "company": "Retail Chain Plus",
+    "lastContactDate": "2023-12-25",
+    "notes": "Multi-location retail chain. Needs inventory integration.",
+    "createdAt": "2023-07-12"
+  },
+  {
+    "Id": 9,
+    "name": "Jennifer Lee",
+    "email": "jennifer.lee@consultingpro.com",
+    "phone": "+1 (555) 901-2345",
+    "company": "Consulting Pro",
+    "lastContactDate": "2023-12-22",
+    "notes": "Management consultant interested in team collaboration tools.",
+    "createdAt": "2023-10-03"
+  },
+  {
+    "Id": 10,
+    "name": "Kevin Brown",
+    "email": "k.brown@manufacturing.com",
+    "phone": "+1 (555) 012-3456",
+    "company": "Advanced Manufacturing",
+    "lastContactDate": "2023-12-20",
+    "notes": "Manufacturing company looking for supply chain solutions.",
+    "createdAt": "2023-05-25"
+  },
+  {
+    "Id": 11,
+    "name": "Maria Gonzalez",
+    "email": "m.gonzalez@healthcare.org",
+    "phone": "+1 (555) 123-4567",
+    "company": "Healthcare Solutions",
+    "lastContactDate": "2023-12-18",
+    "notes": "Healthcare organization interested in patient management system.",
+    "createdAt": "2023-08-09"
+  },
+  {
+    "Id": 12,
+    "name": "Thomas Anderson",
+    "email": "t.anderson@financialservices.com",
+    "phone": "+1 (555) 234-5678",
+    "company": "Financial Services Group",
+    "lastContactDate": "2023-12-15",
+    "notes": "Financial services firm needs compliance tracking tools.",
+    "createdAt": "2023-06-14"
+  },
+  {
+    "Id": 13,
+    "name": "Rachel Kim",
+    "email": "r.kim@educationtech.edu",
+    "phone": "+1 (555) 345-6789",
+    "company": "Education Tech Institute",
+    "lastContactDate": "2023-12-12",
+    "notes": "Educational institution looking for student management platform.",
+    "createdAt": "2023-09-21"
+  },
+  {
+    "Id": 14,
+    "name": "Christopher Davis",
+    "email": "c.davis@realestate.com",
+    "phone": "+1 (555) 456-7890",
+    "company": "Premier Real Estate",
+    "lastContactDate": "2023-12-10",
+    "notes": "Real estate company interested in property management tools.",
+    "createdAt": "2023-07-28"
+  },
+  {
+    "Id": 15,
+    "name": "Nicole Wright",
+    "email": "n.wright@logistics.com",
+    "phone": "+1 (555) 567-8901",
+    "company": "Swift Logistics",
+    "lastContactDate": "2023-12-08",
+    "notes": "Logistics company needs route optimization and tracking.",
+    "createdAt": "2023-11-02"
+  },
+  {
+    "Id": 16,
+    "name": "Alex Turner",
+    "email": "alex.turner@energysolutions.com",
+    "phone": "+1 (555) 678-9012",
+    "company": "Green Energy Solutions",
+    "lastContactDate": "2023-12-05",
+    "notes": "Renewable energy company looking for project tracking tools.",
+    "createdAt": "2023-10-16"
+  },
+  {
+    "Id": 17,
+    "name": "Stephanie Clark",
+    "email": "s.clark@foodservice.com",
+    "phone": "+1 (555) 789-0123",
+    "company": "Premium Food Service",
+    "lastContactDate": "2023-12-03",
+    "notes": "Restaurant chain interested in inventory and staff management.",
+    "createdAt": "2023-08-30"
+  },
+  {
+    "Id": 18,
+    "name": "Brian Murphy",
+    "email": "b.murphy@construction.com",
+    "phone": "+1 (555) 890-1234",
+    "company": "Murphy Construction",
+    "lastContactDate": "2023-12-01",
+    "notes": "Construction company needs project timeline and budget tracking.",
+    "createdAt": "2023-05-12"
+  }
+]
