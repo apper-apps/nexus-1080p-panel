@@ -107,7 +107,7 @@ async create(dealData) {
     return { ...deletedDeal }
   },
 
-  async getByStage(stage) {
+async getByStage(stage) {
     await simulateDelay()
     return deals.filter(deal => deal.stage === stage).map(deal => ({ ...deal }))
   },
@@ -122,5 +122,36 @@ async create(dealData) {
     return deals
       .filter(deal => deal.stage === stage)
       .reduce((sum, deal) => sum + deal.value, 0)
+  },
+
+  async getWinRate() {
+    await simulateDelay()
+    const totalDeals = deals.length
+    if (totalDeals === 0) return 0
+    
+    const closedDeals = deals.filter(deal => deal.stage === 'closed').length
+    return Math.round((closedDeals / totalDeals) * 100)
+  },
+
+  async getRecentDeals(days = 30) {
+    await simulateDelay()
+    const cutoffDate = new Date()
+    cutoffDate.setDate(cutoffDate.getDate() - days)
+    
+    return deals
+      .filter(deal => {
+        const dealDate = new Date(deal.createdAt || deal.stageUpdatedAt)
+        return dealDate >= cutoffDate
+      })
+      .map(deal => ({ ...deal }))
+  },
+
+  async getPipelineData() {
+    await simulateDelay()
+    const stages = ['lead', 'qualified', 'proposal', 'negotiation', 'closed']
+    
+    return stages.map(stage => {
+      return deals.filter(deal => deal.stage === stage).length
+    })
   }
 }

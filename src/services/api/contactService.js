@@ -127,6 +127,11 @@ export const contactService = {
     } catch (error) {
       console.error('Error fetching contact activities:', error)
       return []
-    }
+}
+  },
+
+  async getTotalCount() {
+    await delay(200)
+    return contacts.length
   }
 }
