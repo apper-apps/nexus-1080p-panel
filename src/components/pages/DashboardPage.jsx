@@ -22,18 +22,14 @@ const DashboardPage = () => {
   })
   
   // Dashboard metrics state
-const [metrics, setMetrics] = useState({
+  const [metrics, setMetrics] = useState({
     totalContacts: 0,
     activeDeals: 0,
     monthlySalesTarget: 50000,
 currentMonthSales: 0,
     winRate: 0,
     pipelineData: [],
-    recentActivities: [],
-    topPerformers: {
-      contacts: [],
-      companies: []
-    }
+    recentActivities: []
   })
 
   // Load dashboard data
@@ -41,7 +37,7 @@ currentMonthSales: 0,
     loadDashboardData()
   }, [dateRange])
 
-const loadDashboardData = async () => {
+  const loadDashboardData = async () => {
     try {
       setLoading(true)
       setError(null)
@@ -52,18 +48,14 @@ const loadDashboardData = async () => {
 pipelineData,
         winRate,
         recentDeals,
-        recentActivities,
-        topContactsByValue,
-        topCompaniesByOpportunities
+        recentActivities
       ] = await Promise.all([
         contactService.getTotalCount(),
         dealService.getAll(),
         dealService.getPipelineData(),
         dealService.getWinRate(),
         dealService.getRecentDeals(30),
-        activityService.getRecentActivities(8),
-        dealService.getTopContactsByValue(5),
-        dealService.getTopCompaniesByOpportunities(5)
+        activityService.getRecentActivities(8)
       ])
 
       // Filter deals by date range
@@ -86,11 +78,7 @@ pipelineData,
 currentMonthSales,
         winRate,
         pipelineData,
-        recentActivities,
-        topPerformers: {
-          contacts: topContactsByValue,
-          companies: topCompaniesByOpportunities
-        }
+        recentActivities
       })
 
     } catch (err) {
@@ -499,7 +487,7 @@ currentMonthSales,
                             {formatRelativeTime(activity.date)}
                           </span>
                         </div>
-<p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">
                           {activity.description}
                         </p>
                         <div className="flex items-center gap-2 mt-2">
@@ -526,87 +514,6 @@ currentMonthSales,
                   <p className="text-sm text-gray-500">No recent activities</p>
                 </div>
               )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Top Performers Section */}
-        <Card className="col-span-12">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ApperIcon name="Award" className="h-5 w-5 text-primary" />
-              Top Performers
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Top Contacts by Deal Value */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <ApperIcon name="User" className="h-4 w-4 text-primary" />
-                  Top Contacts by Deal Value
-                </h3>
-                <div className="space-y-3">
-                  {metrics.topPerformers.contacts.length > 0 ? (
-                    metrics.topPerformers.contacts.map((contact, index) => (
-                      <div key={contact.name} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:from-primary/5 hover:to-secondary/5 transition-all duration-200">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold">
-                            {index + 1}
-                          </div>
-                          <div>
-                            <div className="font-medium text-gray-900">{contact.name}</div>
-                            <div className="text-sm text-gray-600">{contact.company || 'No company'}</div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-semibold text-primary">{formatCurrency(contact.totalValue)}</div>
-                          <div className="text-xs text-gray-500">{contact.dealCount} deal{contact.dealCount !== 1 ? 's' : ''}</div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8">
-                      <ApperIcon name="User" className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-                      <p className="text-sm text-gray-500">No contact performance data available</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Top Companies by Opportunities */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <ApperIcon name="Building2" className="h-4 w-4 text-primary" />
-                  Top Companies by Opportunities
-                </h3>
-                <div className="space-y-3">
-                  {metrics.topPerformers.companies.length > 0 ? (
-                    metrics.topPerformers.companies.map((company, index) => (
-                      <div key={company.company} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:from-primary/5 hover:to-secondary/5 transition-all duration-200">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-secondary to-accent text-white text-sm font-semibold">
-                            {index + 1}
-                          </div>
-                          <div>
-                            <div className="font-medium text-gray-900">{company.company}</div>
-                            <div className="text-sm text-gray-600">Total value: {formatCurrency(company.totalValue)}</div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-semibold text-secondary">{company.opportunityCount}</div>
-                          <div className="text-xs text-gray-500">opportunities</div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8">
-                      <ApperIcon name="Building2" className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-                      <p className="text-sm text-gray-500">No company performance data available</p>
-                    </div>
-                  )}
-                </div>
-              </div>
             </div>
           </CardContent>
         </Card>
