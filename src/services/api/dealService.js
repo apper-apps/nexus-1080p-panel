@@ -26,14 +26,18 @@ export const dealService = {
     return { ...deal }
   },
 
-  async create(dealData) {
+async create(dealData) {
     await simulateDelay()
     
     const newDeal = {
       Id: nextId++,
       name: dealData.name || '',
       value: dealData.value || 0,
-      contact: dealData.contact || '',
+      closeDate: dealData.closeDate || '',
+      contact: dealData.contactName || '',
+      contactId: dealData.contactId || '',
+      company: dealData.companyName || '',
+      companyId: dealData.companyId || '',
       stage: dealData.stage || 'lead',
       description: dealData.description || '',
       createdAt: new Date().toISOString(),
