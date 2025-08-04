@@ -19,6 +19,9 @@ const [contacts, setContacts] = useState([])
   const [filteredContacts, setFilteredContacts] = useState([])
   const [selectedContact, setSelectedContact] = useState(null)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(20)
+  const [totalRecords, setTotalRecords] = useState(0)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingContact, setEditingContact] = useState(null)
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false)
@@ -60,14 +63,21 @@ const loadContacts = async () => {
 
 const handleSearch = useCallback(async (query) => {
     setSearchQuery(query)
+    setCurrentPage(1) // Reset to first page when searching
     filterContacts(query, filters)
   }, [filters])
 
   const handleFilterChange = useCallback((key, value) => {
     const newFilters = { ...filters, [key]: value }
     setFilters(newFilters)
+    setCurrentPage(1) // Reset to first page when filtering
     filterContacts(searchQuery, newFilters)
   }, [searchQuery, filters])
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage)
+    loadContacts(newPage)
+  }
 
   const filterContacts = useCallback(async (query, currentFilters) => {
     try {
@@ -109,8 +119,38 @@ const handleSearch = useCallback(async (query) => {
           contact.lastContactDate && new Date(contact.lastContactDate) <= new Date(currentFilters.endDate)
         )
       }
-      
-      setFilteredContacts(results)
+// Load contacts with pagination
+      const offset = (currentPage - 1) * itemsPerPage
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "email" } },
+          { field: { Name: "phone" } },
+          { field: { Name: "company" } },
+          { field: { Name: "companyName" } },
+          { field: { Name: "lastContactDate" } },
+          { field: { Name: "notes" } },
+          { field: { Name: "jobTitle" } },
+          { field: { Name: "companyId" } }
+        ],
+        pagingInfo: {
+          limit: itemsPerPage,
+          offset: offset
+        },
+        orderBy: [
+          {
+            fieldName: "Name",
+            sorttype: "ASC"
+          }
+        ]
+      }
+
+      const response = await contactService.getAll(params)
+      if (response && response.data) {
+        setContacts(response.data)
+        setFilteredContacts(response.data)
+        setTotalRecords(response.total || response.data.length)
+      }
     } catch (err) {
       console.error("Error filtering contacts:", err)
       toast.error("Filter failed. Please try again.")
@@ -312,7 +352,7 @@ return (
           icon="Users"
         />
       ) : (
-        <ContactsTable
+<ContactsTable
           contacts={filteredContacts}
           onContactSelect={handleContactSelect}
           selectedContact={selectedContact}
@@ -320,6 +360,10 @@ return (
           onDeleteContact={handleDeleteContact}
           onCompanySelect={handleCompanySelect}
           onQuickAction={handleQuickAction}
+          currentPage={currentPage}
+          totalPages={Math.ceil(totalRecords / itemsPerPage)}
+          totalRecords={totalRecords}
+          onPageChange={handlePageChange}
         />
       )}
 

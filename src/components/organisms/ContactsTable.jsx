@@ -3,7 +3,7 @@ import { format } from "date-fns"
 import ApperIcon from "@/components/ApperIcon"
 import { cn } from "@/utils/cn"
 
-const ContactsTable = ({ contacts, onContactSelect, selectedContact, onEditContact, onDeleteContact, onCompanySelect, onQuickAction }) => {
+const ContactsTable = ({ contacts, onContactSelect, selectedContact, onEditContact, onDeleteContact, onCompanySelect, onQuickAction, currentPage, totalPages, totalRecords, onPageChange }) => {
 const [sortField, setSortField] = useState("name")
   const [companies, setCompanies] = useState([])
   const [sortDirection, setSortDirection] = useState("asc")
@@ -186,8 +186,60 @@ key={contact.Id}
               </tr>
             ))}
           </tbody>
-        </table>
+</table>
       </div>
+      
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="bg-white px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+          <div className="flex items-center text-sm text-gray-600">
+            <span>
+              Showing {Math.min((currentPage - 1) * 20 + 1, totalRecords)} to{' '}
+              {Math.min(currentPage * 20, totalRecords)} of {totalRecords} contacts
+            </span>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={cn(
+                "px-3 py-1 text-sm font-medium rounded-md transition-all duration-200",
+                currentPage === 1
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              )}
+            >
+              <div className="flex items-center space-x-1">
+                <ApperIcon name="ChevronLeft" size={16} />
+                <span>Previous</span>
+              </div>
+            </button>
+            
+            <div className="flex items-center space-x-1">
+              <span className="text-sm text-gray-600">
+                Page {currentPage} of {totalPages}
+              </span>
+            </div>
+            
+            <button
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className={cn(
+                "px-3 py-1 text-sm font-medium rounded-md transition-all duration-200",
+                currentPage === totalPages
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              )}
+            >
+              <div className="flex items-center space-x-1">
+                <span>Next</span>
+                <ApperIcon name="ChevronRight" size={16} />
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
