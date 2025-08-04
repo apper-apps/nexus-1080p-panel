@@ -9,7 +9,7 @@ const AddCompanyModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     industry: initialData?.industry || '',
-    employeeCount: initialData?.employeeCount || '',
+    employeeCount: initialData?.employeeCount?.toString() || '',
     website: initialData?.website || '',
     address: initialData?.address || '',
     description: initialData?.description || ''
@@ -63,7 +63,7 @@ const AddCompanyModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!validateForm()) {
@@ -75,7 +75,7 @@ const AddCompanyModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
     try {
       const submitData = {
         ...formData,
-        employeeCount: parseInt(formData.employeeCount)
+        employeeCount: parseInt(formData.employeeCount) || 0
       };
       
       await onSubmit(submitData);
@@ -115,7 +115,7 @@ const AddCompanyModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+<h2 className="text-xl font-semibold text-gray-900">
                 {initialData ? 'Edit Company' : 'Add New Company'}
               </h2>
               <p className="text-sm text-gray-600 mt-1">
@@ -247,14 +247,14 @@ const AddCompanyModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
                 type="submit"
                 disabled={isSubmitting}
                 className="min-w-[100px]"
-              >
+>
                 {isSubmitting ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Saving...
+                    {initialData ? 'Updating...' : 'Saving...'}
                   </div>
                 ) : (
-                  initialData ? 'Update' : 'Add Company'
+                  initialData ? 'Update Company' : 'Add Company'
                 )}
               </Button>
             </div>

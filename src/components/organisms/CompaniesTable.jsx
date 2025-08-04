@@ -6,7 +6,9 @@ const CompaniesTable = ({
   companies, 
   onCompanySelect, 
   selectedCompany, 
-  loading = false 
+  loading = false,
+  onEdit,
+  onDelete
 }) => {
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
@@ -174,23 +176,25 @@ const CompaniesTable = ({
                     {company.contactCount}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Edit functionality would go here
+                        onEdit && onEdit(company);
                       }}
                       className="text-indigo-600 hover:text-indigo-900 transition-colors"
+                      title="Edit company"
                     >
                       <ApperIcon name="Edit2" size={16} />
                     </button>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Delete functionality would go here
+                        onDelete && onDelete(company);
                       }}
                       className="text-red-600 hover:text-red-900 transition-colors"
+                      title="Delete company"
                     >
                       <ApperIcon name="Trash2" size={16} />
                     </button>
