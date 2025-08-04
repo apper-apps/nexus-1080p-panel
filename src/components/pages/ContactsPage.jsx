@@ -6,6 +6,7 @@ import SearchBar from "@/components/molecules/SearchBar"
 import ContactsTable from "@/components/organisms/ContactsTable"
 import ContactDetailPanel from "@/components/organisms/ContactDetailPanel"
 import AddContactModal from "@/components/organisms/AddContactModal"
+import AddActivityModal from "@/components/organisms/AddActivityModal"
 import Loading from "@/components/ui/Loading"
 import Error from "@/components/ui/Error"
 import Empty from "@/components/ui/Empty"
@@ -20,9 +21,13 @@ const [contacts, setContacts] = useState([])
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingContact, setEditingContact] = useState(null)
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false)
+  const [activityEntity, setActivityEntity] = useState(null)
+  const [activityPreData, setActivityPreData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
+
 const loadContacts = async () => {
     try {
       setLoading(true)
@@ -156,7 +161,43 @@ const handleEditContact = (contact) => {
     }
   }
 
-useEffect(() => {
+const handleQuickAction = (contact, actionType) => {
+    let preData = {}
+    
+    if (actionType === 'call') {
+      preData = {
+        type: 'call',
+        title: `Call with ${contact.name}`,
+        description: `Phone call with ${contact.name}`,
+        outcome: '',
+        date: new Date().toISOString().slice(0, 16)
+      }
+    } else if (actionType === 'follow-up') {
+      const followUpDate = new Date()
+      followUpDate.setDate(followUpDate.getDate() + 1) // Default to tomorrow
+      
+      preData = {
+        type: 'task',
+        title: `Follow up with ${contact.name}`,
+        description: `Schedule follow-up with ${contact.name}`,
+        outcome: '',
+        date: new Date().toISOString().slice(0, 16),
+        dueDate: followUpDate.toISOString().slice(0, 16),
+        completed: false
+      }
+    }
+    
+    setActivityEntity({ type: 'contact', id: contact.Id })
+    setActivityPreData(preData)
+    setIsActivityModalOpen(true)
+  }
+
+  const handleActivityAdded = (newActivity) => {
+    toast.success('Activity logged successfully')
+    // Optionally refresh data or update UI
+  }
+
+  useEffect(() => {
     loadContacts()
     loadCompanies()
   }, [])
@@ -221,6 +262,7 @@ useEffect(() => {
             onEditContact={handleEditContact}
             onDeleteContact={handleDeleteContact}
             onCompanySelect={handleCompanySelect}
+            onQuickAction={handleQuickAction}
           />
         )}
 
@@ -283,6 +325,19 @@ useEffect(() => {
         editingContact={editingContact}
         isEditMode={true}
         companies={companies}
+      />
+{/* Activity Modal */}
+      <AddActivityModal
+        isOpen={isActivityModalOpen}
+        onClose={() => {
+          setIsActivityModalOpen(false)
+          setActivityEntity(null)
+          setActivityPreData(null)
+        }}
+        entityType={activityEntity?.type}
+        entityId={activityEntity?.id}
+        onActivityAdded={handleActivityAdded}
+        prePopulatedData={activityPreData}
       />
     </>
   )

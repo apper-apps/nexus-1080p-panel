@@ -8,7 +8,8 @@ const CompaniesTable = ({
   selectedCompany, 
   loading = false,
   onEdit,
-  onDelete
+  onDelete,
+  onQuickAction
 }) => {
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
@@ -178,6 +179,26 @@ const CompaniesTable = ({
                 </td>
 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onQuickAction && onQuickAction(company, 'call');
+                      }}
+                      className="text-green-600 hover:text-green-700 transition-colors p-1 rounded hover:bg-green-50"
+                      title="Log Call"
+                    >
+                      <ApperIcon name="Phone" size={16} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onQuickAction && onQuickAction(company, 'follow-up');
+                      }}
+                      className="text-blue-600 hover:text-blue-700 transition-colors p-1 rounded hover:bg-blue-50"
+                      title="Schedule Follow-up"
+                    >
+                      <ApperIcon name="Calendar" size={16} />
+                    </button>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

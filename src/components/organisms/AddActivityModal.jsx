@@ -7,15 +7,15 @@ import Label from '@/components/atoms/Label'
 import ApperIcon from '@/components/ApperIcon'
 import { activityService } from '@/services/api/activityService'
 
-const AddActivityModal = ({ isOpen, onClose, entityType, entityId, onActivityAdded }) => {
-  const [formData, setFormData] = useState({
-    type: 'call',
-    title: '',
-    description: '',
-    outcome: '',
-    date: new Date().toISOString().slice(0, 16), // Format for datetime-local input
-    dueDate: '',
-    completed: false
+const AddActivityModal = ({ isOpen, onClose, entityType, entityId, onActivityAdded, prePopulatedData }) => {
+const [formData, setFormData] = useState({
+    type: prePopulatedData?.type || 'call',
+    title: prePopulatedData?.title || '',
+    description: prePopulatedData?.description || '',
+    outcome: prePopulatedData?.outcome || '',
+    date: prePopulatedData?.date || new Date().toISOString().slice(0, 16), // Format for datetime-local input
+    dueDate: prePopulatedData?.dueDate || '',
+    completed: prePopulatedData?.completed || false
   })
   const [loading, setLoading] = useState(false)
 
@@ -73,13 +73,27 @@ const AddActivityModal = ({ isOpen, onClose, entityType, entityId, onActivityAdd
       dueDate: '',
       completed: false
     })
-    onClose()
+onClose()
   }
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
+  // Reset form data when modal opens with new pre-populated data
+  React.useEffect(() => {
+    if (isOpen && prePopulatedData) {
+      setFormData({
+        type: prePopulatedData.type || 'call',
+        title: prePopulatedData.title || '',
+        description: prePopulatedData.description || '',
+        outcome: prePopulatedData.outcome || '',
+        date: prePopulatedData.date || new Date().toISOString().slice(0, 16),
+        dueDate: prePopulatedData.dueDate || '',
+        completed: prePopulatedData.completed || false
+      })
+    }
+  }, [isOpen, prePopulatedData])
   if (!isOpen) return null
 
   const selectedType = activityTypes.find(type => type.value === formData.type)

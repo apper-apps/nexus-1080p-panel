@@ -3,7 +3,7 @@ import { format } from "date-fns"
 import ApperIcon from "@/components/ApperIcon"
 import { cn } from "@/utils/cn"
 
-const ContactsTable = ({ contacts, onContactSelect, selectedContact, onEditContact, onDeleteContact, onCompanySelect }) => {
+const ContactsTable = ({ contacts, onContactSelect, selectedContact, onEditContact, onDeleteContact, onCompanySelect, onQuickAction }) => {
 const [sortField, setSortField] = useState("name")
   const [companies, setCompanies] = useState([])
   const [sortDirection, setSortDirection] = useState("asc")
@@ -140,7 +140,27 @@ const SortHeader = ({ field, children }) => (
                   {format(new Date(contact.lastContactDate), "MMM d, yyyy")}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  <div className="flex items-center space-x-2">
+<div className="flex items-center space-x-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onQuickAction && onQuickAction(contact, 'call')
+                      }}
+                      className="text-green-600 hover:text-green-700 transition-colors p-1 rounded hover:bg-green-50"
+                      title="Log Call"
+                    >
+                      <ApperIcon name="Phone" size={16} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onQuickAction && onQuickAction(contact, 'follow-up')
+                      }}
+                      className="text-blue-600 hover:text-blue-700 transition-colors p-1 rounded hover:bg-blue-50"
+                      title="Schedule Follow-up"
+                    >
+                      <ApperIcon name="Calendar" size={16} />
+                    </button>
                     <button
                       onClick={(e) => {
                         e.stopPropagation()

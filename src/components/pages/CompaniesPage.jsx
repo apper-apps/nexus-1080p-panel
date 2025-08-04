@@ -3,6 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import CompaniesTable from "@/components/organisms/CompaniesTable";
 import AddCompanyModal from "@/components/organisms/AddCompanyModal";
+import AddActivityModal from "@/components/organisms/AddActivityModal";
 import CompanyDetailPanel from "@/components/organisms/CompanyDetailPanel";
 import ConfirmationDialog from "@/components/organisms/ConfirmationDialog";
 import { companyService } from "@/services/api/companyService";
@@ -24,7 +25,9 @@ const [companies, setCompanies] = useState([]);
   const [deletingCompany, setDeletingCompany] = useState(null);
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
   const [companyContacts, setCompanyContacts] = useState([]);
-
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [activityEntity, setActivityEntity] = useState(null);
+  const [activityPreData, setActivityPreData] = useState(null);
   // Load companies on component mount
   const loadCompanies = useCallback(async () => {
     try {
@@ -127,7 +130,41 @@ const [companies, setCompanies] = useState([]);
       toast.error('Failed to delete company');
     }
   };
+const handleQuickAction = (company, actionType) => {
+    let preData = {}
+    
+    if (actionType === 'call') {
+      preData = {
+        type: 'call',
+        title: `Call with ${company.name}`,
+        description: `Phone call with ${company.name}`,
+        outcome: '',
+        date: new Date().toISOString().slice(0, 16)
+      }
+    } else if (actionType === 'follow-up') {
+      const followUpDate = new Date()
+      followUpDate.setDate(followUpDate.getDate() + 1) // Default to tomorrow
+      
+      preData = {
+        type: 'task',
+        title: `Follow up with ${company.name}`,
+        description: `Schedule follow-up with ${company.name}`,
+        outcome: '',
+        date: new Date().toISOString().slice(0, 16),
+        dueDate: followUpDate.toISOString().slice(0, 16),
+        completed: false
+      }
+    }
+    
+    setActivityEntity({ type: 'company', id: company.Id })
+    setActivityPreData(preData)
+    setIsActivityModalOpen(true)
+  }
 
+  const handleActivityAdded = (newActivity) => {
+    toast.success('Activity logged successfully')
+    // Optionally refresh data or update UI
+  }
   if (loading) {
     return <Loading />;
   }
@@ -233,13 +270,14 @@ const [companies, setCompanies] = useState([]);
           }
 />
       ) : (
-        <CompaniesTable
+<CompaniesTable
           companies={companies}
           onCompanySelect={handleCompanySelect}
           selectedCompany={selectedCompany}
           loading={loading}
           onEdit={handleEditCompany}
           onDelete={handleDeleteCompany}
+          onQuickAction={handleQuickAction}
         />
       )}
 
@@ -304,6 +342,19 @@ const [companies, setCompanies] = useState([]);
           />
         )}
       </AnimatePresence>
+{/* Activity Modal */}
+      <AddActivityModal
+        isOpen={isActivityModalOpen}
+        onClose={() => {
+          setIsActivityModalOpen(false)
+          setActivityEntity(null)
+          setActivityPreData(null)
+        }}
+        entityType={activityEntity?.type}
+        entityId={activityEntity?.id}
+        onActivityAdded={handleActivityAdded}
+        prePopulatedData={activityPreData}
+      />
     </div>
   );
 };
