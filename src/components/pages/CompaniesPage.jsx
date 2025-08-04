@@ -1,20 +1,22 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
-import CompaniesTable from "@/components/organisms/CompaniesTable";
-import AddCompanyModal from "@/components/organisms/AddCompanyModal";
-import AddActivityModal from "@/components/organisms/AddActivityModal";
-import CompanyDetailPanel from "@/components/organisms/CompanyDetailPanel";
-import ConfirmationDialog from "@/components/organisms/ConfirmationDialog";
-import { companyService } from "@/services/api/companyService";
+import AdvancedSearchPanel from "@/components/molecules/AdvancedSearchPanel";
 import { contactService } from "@/services/api/contactService";
+import { companyService } from "@/services/api/companyService";
 import ApperIcon from "@/components/ApperIcon";
+import AddCompanyModal from "@/components/organisms/AddCompanyModal";
+import CompanyDetailPanel from "@/components/organisms/CompanyDetailPanel";
+import CompaniesTable from "@/components/organisms/CompaniesTable";
+import ConfirmationDialog from "@/components/organisms/ConfirmationDialog";
+import AddActivityModal from "@/components/organisms/AddActivityModal";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import Button from "@/components/atoms/Button";
 const CompaniesPage = () => {
 const [companies, setCompanies] = useState([]);
+  const [filteredCompanies, setFilteredCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -28,13 +30,21 @@ const [companies, setCompanies] = useState([]);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
   const [activityEntity, setActivityEntity] = useState(null);
   const [activityPreData, setActivityPreData] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState({
+    industry: '',
+    minEmployees: '',
+    maxEmployees: '',
+    location: ''
+  });
   // Load companies on component mount
-  const loadCompanies = useCallback(async () => {
+const loadCompanies = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await companyService.getAll();
       setCompanies(data);
+      setFilteredCompanies(data);
     } catch (err) {
       setError(err.message);
       toast.error('Failed to load companies');
@@ -46,6 +56,64 @@ const [companies, setCompanies] = useState([]);
   useEffect(() => {
     loadCompanies();
   }, [loadCompanies]);
+
+  const handleSearch = useCallback((query) => {
+    setSearchQuery(query);
+    filterCompanies(query, filters);
+  }, [filters]);
+
+  const handleFilterChange = useCallback((key, value) => {
+    const newFilters = { ...filters, [key]: value };
+    setFilters(newFilters);
+    filterCompanies(searchQuery, newFilters);
+  }, [searchQuery, filters]);
+
+  const filterCompanies = useCallback((query, currentFilters) => {
+    let results = [...companies];
+    
+    // Apply search query
+    if (query && query.trim()) {
+      const searchTerm = query.toLowerCase().trim();
+      results = results.filter(company => 
+        company.name.toLowerCase().includes(searchTerm) ||
+        (company.industry && company.industry.toLowerCase().includes(searchTerm)) ||
+        (company.address && company.address.toLowerCase().includes(searchTerm)) ||
+        (company.description && company.description.toLowerCase().includes(searchTerm))
+      );
+    }
+    
+    // Apply industry filter
+    if (currentFilters.industry) {
+      results = results.filter(company =>
+        company.industry && company.industry.toLowerCase() === currentFilters.industry.toLowerCase()
+      );
+    }
+    
+    // Apply employee count filters
+    if (currentFilters.minEmployees) {
+      results = results.filter(company =>
+        company.employeeCount >= parseInt(currentFilters.minEmployees)
+      );
+    }
+    if (currentFilters.maxEmployees) {
+      results = results.filter(company =>
+        company.employeeCount <= parseInt(currentFilters.maxEmployees)
+      );
+    }
+    
+    // Apply location filter
+    if (currentFilters.location) {
+      results = results.filter(company =>
+        company.address && company.address.toLowerCase().includes(currentFilters.location.toLowerCase())
+      );
+    }
+    
+    setFilteredCompanies(results);
+  }, [companies]);
+
+  useEffect(() => {
+    filterCompanies(searchQuery, filters);
+  }, [companies, filterCompanies, searchQuery, filters]);
 
 // Handle company selection for detail panel
   const handleCompanySelect = async (company) => {
@@ -177,7 +245,7 @@ const handleQuickAction = (company, actionType) => {
     );
   }
 
-  return (
+return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -198,6 +266,16 @@ const handleQuickAction = (company, actionType) => {
           Add Company
         </Button>
       </div>
+
+      {/* Advanced Search Panel */}
+      <AdvancedSearchPanel
+        type="companies"
+        onSearch={handleSearch}
+        onFilter={handleFilterChange}
+        filters={filters}
+        placeholder="Search companies by name, industry, location..."
+        className="max-w-full"
+      />
 
       {/* Stats Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -267,18 +345,31 @@ const handleQuickAction = (company, actionType) => {
               <ApperIcon name="Plus" size={16} className="mr-2" />
               Add Company
             </Button>
-          }
-/>
-      ) : (
-<CompaniesTable
-          companies={companies}
-          onCompanySelect={handleCompanySelect}
-          selectedCompany={selectedCompany}
-          loading={loading}
-          onEdit={handleEditCompany}
-          onDelete={handleDeleteCompany}
-          onQuickAction={handleQuickAction}
+}
         />
+      ) : (
+        filteredCompanies.length === 0 ? (
+          <Empty
+            title={searchQuery || Object.values(filters).some(f => f) ? "No companies found" : "No companies yet"}
+            description={searchQuery || Object.values(filters).some(f => f) ? "Try adjusting your search or filters" : "Add your first company to get started"}
+            action={
+              <Button onClick={() => setIsAddModalOpen(true)}>
+                <ApperIcon name="Plus" className="mr-2" size={16} />
+                Add Company
+              </Button>
+            }
+          />
+        ) : (
+          <CompaniesTable
+            companies={filteredCompanies}
+            onCompanySelect={handleCompanySelect}
+            selectedCompany={selectedCompany}
+            loading={loading}
+            onEdit={handleEditCompany}
+            onDelete={handleDeleteCompany}
+            onQuickAction={handleQuickAction}
+          />
+        )
       )}
 
       {/* Add Company Modal */}

@@ -1,18 +1,18 @@
-import { useState, useEffect, useCallback } from "react"
-import { AnimatePresence } from "framer-motion"
-import { toast } from "react-toastify"
-import Button from "@/components/atoms/Button"
-import SearchBar from "@/components/molecules/SearchBar"
-import ContactsTable from "@/components/organisms/ContactsTable"
-import ContactDetailPanel from "@/components/organisms/ContactDetailPanel"
-import AddContactModal from "@/components/organisms/AddContactModal"
-import AddActivityModal from "@/components/organisms/AddActivityModal"
-import Loading from "@/components/ui/Loading"
-import Error from "@/components/ui/Error"
-import Empty from "@/components/ui/Empty"
-import ApperIcon from "@/components/ApperIcon"
-import { contactService } from "@/services/api/contactService"
-import { companyService } from "@/services/api/companyService"
+import React, { useCallback, useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
+import AdvancedSearchPanel from "@/components/molecules/AdvancedSearchPanel";
+import { contactService } from "@/services/api/contactService";
+import { companyService } from "@/services/api/companyService";
+import ApperIcon from "@/components/ApperIcon";
+import AddContactModal from "@/components/organisms/AddContactModal";
+import ContactsTable from "@/components/organisms/ContactsTable";
+import AddActivityModal from "@/components/organisms/AddActivityModal";
+import ContactDetailPanel from "@/components/organisms/ContactDetailPanel";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Button from "@/components/atoms/Button";
 const ContactsPage = () => {
 const [contacts, setContacts] = useState([])
   const [companies, setCompanies] = useState([])
@@ -27,7 +27,13 @@ const [contacts, setContacts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
-
+  const [filters, setFilters] = useState({
+    company: '',
+    jobTitle: '',
+    startDate: '',
+    endDate: '',
+    activityType: ''
+  })
 const loadContacts = async () => {
     try {
       setLoading(true)
@@ -52,16 +58,64 @@ const loadContacts = async () => {
     }
   }
 
-  const handleSearch = useCallback(async (query) => {
+const handleSearch = useCallback(async (query) => {
     setSearchQuery(query)
+    filterContacts(query, filters)
+  }, [filters])
+
+  const handleFilterChange = useCallback((key, value) => {
+    const newFilters = { ...filters, [key]: value }
+    setFilters(newFilters)
+    filterContacts(searchQuery, newFilters)
+  }, [searchQuery, filters])
+
+  const filterContacts = useCallback(async (query, currentFilters) => {
     try {
-      const results = await contactService.search(query)
+      let results = [...contacts]
+      
+      // Apply search query
+      if (query && query.trim()) {
+        const searchTerm = query.toLowerCase().trim()
+        results = results.filter(contact => 
+          contact.name.toLowerCase().includes(searchTerm) ||
+          contact.email.toLowerCase().includes(searchTerm) ||
+          (contact.company && contact.company.toLowerCase().includes(searchTerm)) ||
+          contact.phone.includes(searchTerm)
+        )
+      }
+      
+      // Apply company filter
+      if (currentFilters.company) {
+        results = results.filter(contact =>
+          contact.company && contact.company.toLowerCase().includes(currentFilters.company.toLowerCase())
+        )
+      }
+      
+      // Apply job title filter (using notes field as proxy)
+      if (currentFilters.jobTitle) {
+        results = results.filter(contact =>
+          contact.notes && contact.notes.toLowerCase().includes(currentFilters.jobTitle.toLowerCase())
+        )
+      }
+      
+      // Apply date range filters
+      if (currentFilters.startDate) {
+        results = results.filter(contact =>
+          contact.lastContactDate && new Date(contact.lastContactDate) >= new Date(currentFilters.startDate)
+        )
+      }
+      if (currentFilters.endDate) {
+        results = results.filter(contact =>
+          contact.lastContactDate && new Date(contact.lastContactDate) <= new Date(currentFilters.endDate)
+        )
+      }
+      
       setFilteredContacts(results)
     } catch (err) {
-      console.error("Error searching contacts:", err)
-      toast.error("Search failed. Please try again.")
+      console.error("Error filtering contacts:", err)
+      toast.error("Filter failed. Please try again.")
     }
-  }, [])
+  }, [contacts])
 
 const handleContactSelect = (contact) => {
     setSelectedContact(contact)
@@ -228,23 +282,26 @@ const handleQuickAction = (contact, actionType) => {
             variant="primary"
             className="sm:w-auto"
           >
-            <ApperIcon name="UserPlus" className="h-4 w-4 mr-2" />
+<ApperIcon name="UserPlus" className="h-4 w-4 mr-2" />
             Add Contact
           </Button>
         </div>
+      </div>
 
-        {/* Search Bar */}
-        <div className="max-w-md">
-          <SearchBar 
-            onSearch={handleSearch}
-            placeholder="Search contacts by name, email, company..."
-          />
-        </div>
+      {/* Advanced Search Panel */}
+      <AdvancedSearchPanel
+        type="contacts"
+        onSearch={handleSearch}
+        onFilter={handleFilterChange}
+        filters={filters}
+        placeholder="Search contacts by name, email, company, phone..."
+        className="max-w-full"
+      />
 
-        {/* Contacts Table */}
-        {filteredContacts.length === 0 ? (
-          <Empty
-            title={searchQuery ? "No contacts found" : "No contacts yet"}
+      {/* Contacts Table */}
+      {filteredContacts.length === 0 ? (
+        <Empty
+          title={searchQuery || Object.values(filters).some(f => f) ? "No contacts found" : "No contacts yet"}
             description={
               searchQuery 
                 ? `No contacts match "${searchQuery}". Try adjusting your search terms.`
@@ -290,10 +347,11 @@ const handleQuickAction = (contact, actionType) => {
                   {searchQuery ? "Search Results" : "Active Contacts"}
                 </div>
               </div>
-            </div>
+</div>
           </div>
         )}
       </div>
+      </>
 
       {/* Contact Detail Panel */}
       <AnimatePresence>

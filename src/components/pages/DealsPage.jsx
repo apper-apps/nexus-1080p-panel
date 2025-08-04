@@ -6,13 +6,12 @@ import ApperIcon from '@/components/ApperIcon'
 import DealCard from '@/components/organisms/DealCard'
 import DealDetailPanel from '@/components/organisms/DealDetailPanel'
 import AddDealModal from '@/components/organisms/AddDealModal'
+import AdvancedSearchPanel from '@/components/molecules/AdvancedSearchPanel'
 import Loading from '@/components/ui/Loading'
 import Error from '@/components/ui/Error'
 import Empty from '@/components/ui/Empty'
-import Input from '@/components/atoms/Input'
 import Button from '@/components/atoms/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/atoms/Card'
-
 // Suppress react-beautiful-dnd defaultProps warning for React 18.3+ compatibility
 const originalWarn = console.warn;
 console.warn = (...args) => {
@@ -95,7 +94,7 @@ const PIPELINE_STAGES = [
 ];
 
 const DealsPage = () => {
-  const [deals, setDeals] = useState([]);
+const [deals, setDeals] = useState([]);
   const [filteredDeals, setFilteredDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -103,6 +102,7 @@ const DealsPage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [filters, setFilters] = useState({
+    stage: '',
     minValue: '',
     maxValue: '',
     startDate: '',
@@ -132,64 +132,66 @@ const DealsPage = () => {
     }
   };
 
-  const filterDeals = () => {
+const filterDeals = useCallback((query, currentFilters) => {
     let filtered = [...deals];
 
     // Search filter
-    if (searchTerm.trim()) {
+    if (query && query.trim()) {
       filtered = filtered.filter(deal =>
-        deal?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        deal?.contact?.toLowerCase().includes(searchTerm.toLowerCase())
+        deal?.name?.toLowerCase().includes(query.toLowerCase()) ||
+        deal?.contact?.toLowerCase().includes(query.toLowerCase())
       );
+    }
+
+    // Stage filter
+    if (currentFilters.stage) {
+      filtered = filtered.filter(deal => deal?.stage === currentFilters.stage);
     }
 
     // Value range filter
-    if (filters.minValue) {
-      filtered = filtered.filter(deal => deal?.value >= parseInt(filters.minValue));
+    if (currentFilters.minValue) {
+      filtered = filtered.filter(deal => deal?.value >= parseInt(currentFilters.minValue));
     }
-    if (filters.maxValue) {
-      filtered = filtered.filter(deal => deal?.value <= parseInt(filters.maxValue));
+    if (currentFilters.maxValue) {
+      filtered = filtered.filter(deal => deal?.value <= parseInt(currentFilters.maxValue));
     }
 
     // Date range filter (using stageUpdatedAt as close date proxy)
-    if (filters.startDate) {
+    if (currentFilters.startDate) {
       filtered = filtered.filter(deal => 
-        deal?.stageUpdatedAt && new Date(deal.stageUpdatedAt) >= new Date(filters.startDate)
+        deal?.stageUpdatedAt && new Date(deal.stageUpdatedAt) >= new Date(currentFilters.startDate)
       );
     }
-    if (filters.endDate) {
+    if (currentFilters.endDate) {
       filtered = filtered.filter(deal => 
-        deal?.stageUpdatedAt && new Date(deal.stageUpdatedAt) <= new Date(filters.endDate)
+        deal?.stageUpdatedAt && new Date(deal.stageUpdatedAt) <= new Date(currentFilters.endDate)
       );
     }
 
     // Contact filter
-    if (filters.contact) {
+    if (currentFilters.contact) {
       filtered = filtered.filter(deal =>
-        deal?.contact?.toLowerCase().includes(filters.contact.toLowerCase())
+        deal?.contact?.toLowerCase().includes(currentFilters.contact.toLowerCase())
       );
     }
 
     setFilteredDeals(filtered);
-  };
+  }, [deals]);
 
-  const handleFilterChange = (key, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }));
-  };
+const handleSearch = useCallback((query) => {
+    setSearchTerm(query);
+    filterDeals(query, filters);
+  }, [filterDeals, filters]);
 
-  const clearFilters = () => {
-    setFilters({
-      minValue: '',
-      maxValue: '',
-      startDate: '',
-      endDate: '',
-      contact: ''
-    });
-    setSearchTerm('');
-  };
+  const handleFilterChange = useCallback((key, value) => {
+    const newFilters = { ...filters, [key]: value };
+    setFilters(newFilters);
+    filterDeals(searchTerm, newFilters);
+  }, [filterDeals, searchTerm, filters]);
+
+  useEffect(() => {
+    filterDeals(searchTerm, filters);
+  }, [deals, filterDeals, searchTerm, filters]);
 
   // Handle drag end with error handling
   const handleDragEnd = useCallback(async (result) => {
@@ -273,86 +275,24 @@ const getDealsByStage = (stage) => {
           </p>
         </div>
         
-        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-          <Input
-            placeholder="Search deals or contacts..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-64"
-            icon={<ApperIcon name="Search" size={16} />}
-          />
-          <Button 
-            onClick={() => setIsAddModalOpen(true)}
-            className="whitespace-nowrap"
-          >
-            <ApperIcon name="Plus" size={16} />
-            Add Deal
-          </Button>
-        </div>
+<Button 
+          onClick={() => setIsAddModalOpen(true)}
+          className="flex items-center gap-2 whitespace-nowrap"
+        >
+          <ApperIcon name="Plus" size={16} />
+          Add Deal
+        </Button>
       </div>
 
-      {/* Filter Controls */}
-      <Card className="p-4">
-        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 flex-1">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Min Value</label>
-              <Input
-                type="number"
-                placeholder="0"
-                value={filters.minValue}
-                onChange={(e) => handleFilterChange('minValue', e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Max Value</label>
-              <Input
-                type="number"
-                placeholder="1000000"
-                value={filters.maxValue}
-                onChange={(e) => handleFilterChange('maxValue', e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-              <Input
-                type="date"
-                value={filters.startDate}
-                onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-              <Input
-                type="date"
-                value={filters.endDate}
-                onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contact</label>
-              <Input
-                placeholder="Filter by contact..."
-                value={filters.contact}
-                onChange={(e) => handleFilterChange('contact', e.target.value)}
-                className="w-full"
-              />
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            onClick={clearFilters}
-            className="whitespace-nowrap"
-          >
-            <ApperIcon name="X" size={16} />
-            Clear Filters
-          </Button>
-        </div>
-      </Card>
+      {/* Advanced Search Panel */}
+      <AdvancedSearchPanel
+        type="deals"
+        onSearch={handleSearch}
+        onFilter={handleFilterChange}
+        filters={filters}
+        placeholder="Search deals by name or contact..."
+        className="max-w-full"
+      />
       {filteredDeals.length === 0 ? (
         <Empty 
           title="No deals found"
