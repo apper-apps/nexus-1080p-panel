@@ -132,51 +132,51 @@ const [deals, setDeals] = useState([]);
     }
   };
 
-const filterDeals = useCallback((query, currentFilters) => {
+const filterDeals = useCallback(() => {
     let filtered = [...deals];
 
     // Search filter
-    if (query && query.trim()) {
+    if (searchTerm && searchTerm.trim()) {
       filtered = filtered.filter(deal =>
-        deal?.name?.toLowerCase().includes(query.toLowerCase()) ||
-        deal?.contact?.toLowerCase().includes(query.toLowerCase())
+        deal?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        deal?.contact?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Stage filter
-    if (currentFilters.stage) {
-      filtered = filtered.filter(deal => deal?.stage === currentFilters.stage);
+    // Stage filter - defensive null checking
+    if (filters?.stage) {
+      filtered = filtered.filter(deal => deal?.stage === filters.stage);
     }
 
     // Value range filter
-    if (currentFilters.minValue) {
-      filtered = filtered.filter(deal => deal?.value >= parseInt(currentFilters.minValue));
+    if (filters?.minValue) {
+      filtered = filtered.filter(deal => deal?.value >= parseInt(filters.minValue));
     }
-    if (currentFilters.maxValue) {
-      filtered = filtered.filter(deal => deal?.value <= parseInt(currentFilters.maxValue));
+    if (filters?.maxValue) {
+      filtered = filtered.filter(deal => deal?.value <= parseInt(filters.maxValue));
     }
 
     // Date range filter (using stageUpdatedAt as close date proxy)
-    if (currentFilters.startDate) {
+    if (filters?.startDate) {
       filtered = filtered.filter(deal => 
-        deal?.stageUpdatedAt && new Date(deal.stageUpdatedAt) >= new Date(currentFilters.startDate)
+        deal?.stageUpdatedAt && new Date(deal.stageUpdatedAt) >= new Date(filters.startDate)
       );
     }
-    if (currentFilters.endDate) {
+    if (filters?.endDate) {
       filtered = filtered.filter(deal => 
-        deal?.stageUpdatedAt && new Date(deal.stageUpdatedAt) <= new Date(currentFilters.endDate)
+        deal?.stageUpdatedAt && new Date(deal.stageUpdatedAt) <= new Date(filters.endDate)
       );
     }
 
     // Contact filter
-    if (currentFilters.contact) {
+    if (filters?.contact) {
       filtered = filtered.filter(deal =>
-        deal?.contact?.toLowerCase().includes(currentFilters.contact.toLowerCase())
+        deal?.contact?.toLowerCase().includes(filters.contact.toLowerCase())
       );
     }
 
     setFilteredDeals(filtered);
-  }, [deals]);
+  }, [deals, searchTerm, filters]);
 
 const handleSearch = useCallback((query) => {
     setSearchTerm(query);
