@@ -200,14 +200,14 @@ const handleDealClick = (deal) => {
 
   const handleAddDeal = async (newDeal) => {
     try {
-      const createdDeal = await dealService.create(newDeal)
-      setDeals(prev => [...prev, createdDeal])
-      setIsAddModalOpen(false)
-      toast.success('Deal added successfully')
+      const createdDeal = await dealService.create(newDeal);
+      setDeals(prev => [...prev, createdDeal]);
+      setIsAddModalOpen(false);
+      toast.success('Deal added successfully');
     } catch (err) {
-      toast.error('Failed to add deal')
+      toast.error('Failed to add deal');
     }
-  }
+  };
 
 const getDealsByStage = (stage) => {
     return filteredDeals.filter(deal => deal?.stage === stage);
@@ -351,13 +351,14 @@ const getDealsByStage = (stage) => {
                         </CardTitle>
                       </div>
                       <div className="flex justify-between text-xs text-gray-500">
-                        <span>{stageDeals.length} deals</span>
+<span>{stageDeals.length} deals</span>
                         <span>{formatCurrency(stageValue)}</span>
                       </div>
-</div>
-              </div>
-              <div className="flex space-x-4 overflow-x-auto pb-4">
-                <ErrorBoundary>
+                    </CardHeader>
+                  </Card>
+                  
+                  <div className="flex-1">
+                    <ErrorBoundary>
                   <Droppable droppableId={stage.id}>
                     {(provided, snapshot) => {
                       try {
@@ -421,11 +422,11 @@ const getDealsByStage = (stage) => {
                           </div>
                         );
                       }
-                    }}
+}}
                   </Droppable>
                 </ErrorBoundary>
-</div>
-              </Card>
+                  </div>
+                </div>
                 );
               })}
           </div>
