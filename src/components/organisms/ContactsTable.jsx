@@ -38,10 +38,10 @@ const [sortField, setSortField] = useState("name")
     }
   })
 
-  const SortHeader = ({ field, children }) => (
+const SortHeader = ({ field, children }) => (
     <th
       onClick={() => handleSort(field)}
-      className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercasetracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
+      className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
     >
       <div className="flex items-center gap-2">
         {children}
