@@ -1,110 +1,153 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
-import AddDealModal from "@/components/organisms/AddDealModal";
-import DealCard from "@/components/organisms/DealCard";
-import DealDetailPanel from "@/components/organisms/DealDetailPanel";
 import { dealService } from "@/services/api/dealService";
 import ApperIcon from "@/components/ApperIcon";
+import DealCard from "@/components/organisms/DealCard";
+import DealDetailPanel from "@/components/organisms/DealDetailPanel";
+import AddDealModal from "@/components/organisms/AddDealModal";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/Card";
+
+// Error Boundary Component for Drag and Drop
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Drag and Drop Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex-1 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-600 text-sm">Drag and drop temporarily unavailable</p>
+          <button 
+            onClick={() => this.setState({ hasError: false, error: null })}
+            className="mt-2 px-3 py-1 bg-red-100 text-red-700 text-xs rounded hover:bg-red-200"
+          >
+            Retry
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Memoized DealCard to prevent unnecessary re-renders
+const MemoizedDealCard = memo(DealCard, (prevProps, nextProps) => {
+  return prevProps.deal?.Id === nextProps.deal?.Id && 
+         prevProps.deal?.Name === nextProps.deal?.Name &&
+         prevProps.deal?.Amount === nextProps.deal?.Amount &&
+         prevProps.deal?.Stage === nextProps.deal?.Stage;
+});
+
 const PIPELINE_STAGES = [
   { id: 'lead', name: 'Lead', color: 'bg-blue-500', count: 0 },
   { id: 'qualified', name: 'Qualified', color: 'bg-yellow-500', count: 0 },
   { id: 'proposal', name: 'Proposal', color: 'bg-orange-500', count: 0 },
   { id: 'negotiation', name: 'Negotiation', color: 'bg-purple-500', count: 0 },
   { id: 'closed', name: 'Closed Won/Lost', color: 'bg-green-500', count: 0 }
-]
+];
 
 const DealsPage = () => {
-const [deals, setDeals] = useState([])
-  const [filteredDeals, setFilteredDeals] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [selectedDeal, setSelectedDeal] = useState(null)
+  const [deals, setDeals] = useState([]);
+  const [filteredDeals, setFilteredDeals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedDeal, setSelectedDeal] = useState(null);
   const [filters, setFilters] = useState({
     minValue: '',
     maxValue: '',
     startDate: '',
     endDate: '',
     contact: ''
-  })
+  });
 
   useEffect(() => {
-    loadDeals()
-  }, [])
+    loadDeals();
+  }, []);
 
   useEffect(() => {
-    filterDeals()
-  }, [deals, searchTerm, filters])
+    filterDeals();
+  }, [deals, searchTerm, filters]);
 
   const loadDeals = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      const dealsData = await dealService.getAll()
-      setDeals(dealsData)
+      setLoading(true);
+      setError(null);
+      const dealsData = await dealService.getAll();
+      setDeals(dealsData);
     } catch (err) {
-      setError('Failed to load deals')
-      toast.error('Failed to load deals')
+      setError('Failed to load deals');
+      toast.error('Failed to load deals');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-const filterDeals = () => {
-    let filtered = [...deals]
+  const filterDeals = () => {
+    let filtered = [...deals];
 
     // Search filter
     if (searchTerm.trim()) {
       filtered = filtered.filter(deal =>
-        deal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        deal.contact.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+        deal?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        deal?.contact?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
     // Value range filter
     if (filters.minValue) {
-      filtered = filtered.filter(deal => deal.value >= parseInt(filters.minValue))
+      filtered = filtered.filter(deal => deal?.value >= parseInt(filters.minValue));
     }
     if (filters.maxValue) {
-      filtered = filtered.filter(deal => deal.value <= parseInt(filters.maxValue))
+      filtered = filtered.filter(deal => deal?.value <= parseInt(filters.maxValue));
     }
 
     // Date range filter (using stageUpdatedAt as close date proxy)
     if (filters.startDate) {
       filtered = filtered.filter(deal => 
-        new Date(deal.stageUpdatedAt) >= new Date(filters.startDate)
-      )
+        deal?.stageUpdatedAt && new Date(deal.stageUpdatedAt) >= new Date(filters.startDate)
+      );
     }
     if (filters.endDate) {
       filtered = filtered.filter(deal => 
-        new Date(deal.stageUpdatedAt) <= new Date(filters.endDate)
-      )
+        deal?.stageUpdatedAt && new Date(deal.stageUpdatedAt) <= new Date(filters.endDate)
+      );
     }
 
     // Contact filter
     if (filters.contact) {
       filtered = filtered.filter(deal =>
-        deal.contact.toLowerCase().includes(filters.contact.toLowerCase())
-      )
+        deal?.contact?.toLowerCase().includes(filters.contact.toLowerCase())
+      );
     }
 
-    setFilteredDeals(filtered)
-  }
+    setFilteredDeals(filtered);
+  };
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({
       ...prev,
       [key]: value
-    }))
-  }
+    }));
+  };
 
   const clearFilters = () => {
     setFilters({
@@ -113,26 +156,26 @@ const filterDeals = () => {
       startDate: '',
       endDate: '',
       contact: ''
-    })
-    setSearchTerm('')
-  }
+    });
+    setSearchTerm('');
+  };
 
-  const handleDealClick = (deal) => {
-    setSelectedDeal(deal)
-  }
+  // Handle drag end with error handling
+  const handleDragEnd = useCallback(async (result) => {
+    if (!result?.destination) return;
 
-  const handleDragEnd = async (result) => {
-    if (!result.destination) return
+    const dealId = parseInt(result.draggableId);
+    const newStage = result.destination.droppableId;
 
-    const { source, destination, draggableId } = result
-    
-    if (source.droppableId === destination.droppableId) return
+    // Validate the drag operation
+    if (!dealId || !newStage) {
+      console.error('Invalid drag operation:', { dealId, newStage });
+      toast.error('Invalid drag operation');
+      return;
+    }
 
     try {
-      const dealId = parseInt(draggableId)
-      const newStage = destination.droppableId
-      
-      await dealService.updateStage(dealId, newStage)
+      await dealService.updateStage(dealId, newStage);
       
       // Update local state
       setDeals(prevDeals =>
@@ -141,13 +184,19 @@ const filterDeals = () => {
             ? { ...deal, stage: newStage, stageUpdatedAt: new Date().toISOString() }
             : deal
         )
-      )
+      );
 
-      toast.success('Deal stage updated successfully')
-    } catch (err) {
-      toast.error('Failed to update deal stage')
+      toast.success('Deal moved successfully');
+    } catch (error) {
+      console.error('Error updating deal stage:', error);
+      toast.error('Failed to move deal. Please try again.');
+      // Reload deals to ensure UI consistency
+      await loadDeals();
     }
-  }
+  }, []);
+const handleDealClick = (deal) => {
+    setSelectedDeal(deal);
+  };
 
   const handleAddDeal = async (newDeal) => {
     try {
@@ -160,13 +209,13 @@ const filterDeals = () => {
     }
   }
 
-  const getDealsByStage = (stage) => {
-    return filteredDeals.filter(deal => deal.stage === stage)
-  }
+const getDealsByStage = (stage) => {
+    return filteredDeals.filter(deal => deal?.stage === stage);
+  };
 
   const getTotalValue = (stage) => {
-    return getDealsByStage(stage).reduce((sum, deal) => sum + deal.value, 0)
-  }
+    return getDealsByStage(stage).reduce((sum, deal) => sum + (deal?.value || 0), 0);
+  };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -174,8 +223,8 @@ const filterDeals = () => {
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(value)
-  }
+    }).format(value || 0);
+  };
 
   if (loading) return <Loading />
   if (error) return <Error message={error} />
@@ -305,51 +354,80 @@ const filterDeals = () => {
                         <span>{stageDeals.length} deals</span>
                         <span>{formatCurrency(stageValue)}</span>
                       </div>
-                    </CardHeader>
-                  </Card>
-
+</div>
+              </div>
+              <div className="flex space-x-4 overflow-x-auto pb-4">
+                <ErrorBoundary>
                   <Droppable droppableId={stage.id}>
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className={`flex-1 space-y-3 p-2 rounded-lg transition-colors ${
-                          snapshot.isDraggingOver 
-                            ? 'bg-blue-50 border-2 border-blue-200 border-dashed' 
-                            : 'bg-gray-50'
-                        }`}
-                        style={{ minHeight: '400px' }}
-                      >
-{stageDeals.map((deal, index) => (
-                          <Draggable
-                            key={deal.Id}
-                            draggableId={deal.Id.toString()}
-                            index={index}
+                    {(provided, snapshot) => {
+                      try {
+                        return (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className={`flex-1 space-y-3 p-2 rounded-lg transition-colors ${
+                              snapshot.isDraggingOver 
+                                ? 'bg-blue-50 border-2 border-blue-200 border-dashed' 
+                                : 'bg-gray-50'
+                            }`}
+                            style={{ minHeight: '400px' }}
                           >
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`transition-transform ${
-                                  snapshot.isDragging ? 'rotate-2 scale-105' : ''
-                                }`}
-                              >
-                                <DealCard 
-                                  deal={deal} 
-                                  onClick={() => handleDealClick(deal)}
-                                />
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    )}
+                            {stageDeals.map((deal, index) => {
+                              if (!deal?.Id) return null;
+                              
+                              return (
+                                <Draggable
+                                  key={deal.Id}
+                                  draggableId={deal.Id.toString()}
+                                  index={index}
+                                >
+                                  {(provided, snapshot) => {
+                                    try {
+                                      return (
+                                        <div
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                          className={`transition-transform ${
+                                            snapshot.isDragging ? 'rotate-2 scale-105' : ''
+                                          }`}
+                                        >
+                                          <MemoizedDealCard 
+                                            deal={deal} 
+                                            onClick={() => handleDealClick(deal)}
+                                          />
+                                        </div>
+                                      );
+                                    } catch (error) {
+                                      console.error('Draggable render error:', error);
+                                      return (
+                                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                                          <p className="text-red-600 text-sm">Failed to render deal</p>
+                                        </div>
+                                      );
+                                    }
+                                  }}
+                                </Draggable>
+                              );
+                            })}
+                            {provided.placeholder}
+                          </div>
+                        );
+                      } catch (error) {
+                        console.error('Droppable render error:', error);
+                        return (
+                          <div className="flex-1 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-red-600 text-sm">Failed to render drop zone</p>
+                          </div>
+                        );
+                      }
+                    }}
                   </Droppable>
-                </div>
-              )
-            })}
+                </ErrorBoundary>
+</div>
+              </Card>
+                );
+              })}
           </div>
         </DragDropContext>
       )}
