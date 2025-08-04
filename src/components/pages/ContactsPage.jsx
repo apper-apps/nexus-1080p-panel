@@ -13,14 +13,15 @@ import ApperIcon from "@/components/ApperIcon"
 import { contactService } from "@/services/api/contactService"
 
 const ContactsPage = () => {
-  const [contacts, setContacts] = useState([])
+const [contacts, setContacts] = useState([])
   const [filteredContacts, setFilteredContacts] = useState([])
   const [selectedContact, setSelectedContact] = useState(null)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editingContact, setEditingContact] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
-
   const loadContacts = async () => {
     try {
       setLoading(true)
@@ -73,9 +74,28 @@ const ContactsPage = () => {
     }
   }
 
-  const handleEditContact = (contact) => {
-    toast.info("Edit functionality coming soon!")
-    console.log("Edit contact:", contact)
+const handleEditContact = (contact) => {
+    setEditingContact(contact)
+    setIsEditModalOpen(true)
+  }
+
+  const handleUpdateContact = async (contactData) => {
+    try {
+      const updatedContact = await contactService.update(editingContact.Id, contactData)
+      setContacts(prev => prev.map(c => c.Id === editingContact.Id ? updatedContact : c))
+      setFilteredContacts(prev => prev.map(c => c.Id === editingContact.Id ? updatedContact : c))
+      
+      // Update selected contact if it's the one being edited
+      if (selectedContact?.Id === editingContact.Id) {
+        setSelectedContact(updatedContact)
+      }
+      
+      toast.success("Contact updated successfully!")
+    } catch (err) {
+      console.error("Error updating contact:", err)
+      toast.error("Failed to update contact. Please try again.")
+      throw err
+    }
   }
 
   const handleDeleteContact = async (contact) => {
@@ -150,10 +170,12 @@ const ContactsPage = () => {
             icon="Users"
           />
         ) : (
-          <ContactsTable
+<ContactsTable
             contacts={filteredContacts}
             onContactSelect={handleContactSelect}
             selectedContact={selectedContact}
+            onEditContact={handleEditContact}
+            onDeleteContact={handleDeleteContact}
           />
         )}
 
@@ -199,10 +221,21 @@ const ContactsPage = () => {
       </AnimatePresence>
 
       {/* Add Contact Modal */}
-      <AddContactModal
+<AddContactModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddContact}
+      />
+
+      <AddContactModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false)
+          setEditingContact(null)
+        }}
+        onSubmit={handleUpdateContact}
+        editingContact={editingContact}
+        isEditMode={true}
       />
     </>
   )

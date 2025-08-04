@@ -4,12 +4,14 @@ import Button from "@/components/atoms/Button"
 import FormField from "@/components/molecules/FormField"
 import ApperIcon from "@/components/ApperIcon"
 
-const AddContactModal = ({ isOpen, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState({
-    name: "",
+const AddContactModal = ({ isOpen, onClose, onSubmit, editingContact = null, isEditMode = false }) => {
+const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     company: "",
+    jobTitle: "",
     notes: ""
   })
   const [errors, setErrors] = useState({})
@@ -23,11 +25,41 @@ const AddContactModal = ({ isOpen, onClose, onSubmit }) => {
     }
   }
 
+// Populate form when editing
+  useState(() => {
+    if (isEditMode && editingContact) {
+      const nameParts = editingContact.name.split(' ')
+      setFormData({
+        firstName: nameParts[0] || "",
+        lastName: nameParts.slice(1).join(' ') || "",
+        email: editingContact.email || "",
+        phone: editingContact.phone || "",
+        company: editingContact.company || "",
+        jobTitle: editingContact.jobTitle || "",
+        notes: editingContact.notes || ""
+      })
+    } else if (!isEditMode) {
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        company: "",
+        jobTitle: "",
+        notes: ""
+      })
+    }
+  }, [isEditMode, editingContact])
+
   const validateForm = () => {
     const newErrors = {}
     
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required"
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required"
+    }
+    
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required"
     }
     
     if (!formData.email.trim()) {
@@ -48,7 +80,7 @@ const AddContactModal = ({ isOpen, onClose, onSubmit }) => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault()
     
     if (!validateForm()) return
@@ -56,32 +88,50 @@ const AddContactModal = ({ isOpen, onClose, onSubmit }) => {
     setIsSubmitting(true)
     
     try {
-      await onSubmit(formData)
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        company: "",
-        notes: ""
-      })
+      // Combine first and last name for submission
+      const submitData = {
+        ...formData,
+        name: `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim()
+      }
+      // Remove firstName and lastName from submit data
+      delete submitData.firstName
+      delete submitData.lastName
+      
+      await onSubmit(submitData)
+      
+      if (!isEditMode) {
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          company: "",
+          jobTitle: "",
+          notes: ""
+        })
+      }
       setErrors({})
       onClose()
     } catch (error) {
-      console.error("Error adding contact:", error)
+      console.error(`Error ${isEditMode ? 'updating' : 'adding'} contact:`, error)
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const handleClose = () => {
+const handleClose = () => {
     if (!isSubmitting) {
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        company: "",
-        notes: ""
-      })
+      if (!isEditMode) {
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          company: "",
+          jobTitle: "",
+          notes: ""
+        })
+      }
       setErrors({})
       onClose()
     }
@@ -111,25 +161,41 @@ const AddContactModal = ({ isOpen, onClose, onSubmit }) => {
                     <div className="h-10 w-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
                       <ApperIcon name="UserPlus" className="h-5 w-5 text-white" />
                     </div>
-                    <h2 className="text-xl font-bold text-gray-900">Add New Contact</h2>
+<h2 className="text-xl font-bold text-gray-900">
+                      {isEditMode ? 'Edit Contact' : 'Add New Contact'}
+                    </h2>
                   </div>
                   <Button onClick={handleClose} variant="ghost" size="sm" disabled={isSubmitting}>
                     <ApperIcon name="X" className="h-4 w-4" />
                   </Button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <FormField
-                    label="Full Name"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    error={errors.name}
-                    required
-                    placeholder="Enter full name"
-                    disabled={isSubmitting}
-                  />
+<form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      label="First Name"
+                      id="firstName"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      error={errors.firstName}
+                      required
+                      placeholder="Enter first name"
+                      disabled={isSubmitting}
+                    />
+
+                    <FormField
+                      label="Last Name"
+                      id="lastName"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      error={errors.lastName}
+                      required
+                      placeholder="Enter last name"
+                      disabled={isSubmitting}
+                    />
+                  </div>
 
                   <FormField
                     label="Email Address"
@@ -157,17 +223,30 @@ const AddContactModal = ({ isOpen, onClose, onSubmit }) => {
                     disabled={isSubmitting}
                   />
 
-                  <FormField
-                    label="Company"
-                    id="company"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    error={errors.company}
-                    required
-                    placeholder="Enter company name"
-                    disabled={isSubmitting}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      label="Company"
+                      id="company"
+                      name="company"
+                      value={formData.company}
+                      onChange={handleChange}
+                      error={errors.company}
+                      required
+                      placeholder="Enter company name"
+                      disabled={isSubmitting}
+                    />
+
+                    <FormField
+                      label="Job Title"
+                      id="jobTitle"
+                      name="jobTitle"
+                      value={formData.jobTitle}
+                      onChange={handleChange}
+                      error={errors.jobTitle}
+                      placeholder="Enter job title"
+                      disabled={isSubmitting}
+                    />
+                  </div>
 
                   <div className="space-y-2">
                     <label htmlFor="notes" className="text-sm font-medium text-gray-700">
@@ -201,15 +280,15 @@ const AddContactModal = ({ isOpen, onClose, onSubmit }) => {
                       className="flex-1"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? (
+{isSubmitting ? (
                         <>
                           <ApperIcon name="Loader2" className="h-4 w-4 mr-2 animate-spin" />
-                          Adding...
+                          {isEditMode ? 'Updating...' : 'Adding...'}
                         </>
                       ) : (
                         <>
-                          <ApperIcon name="UserPlus" className="h-4 w-4 mr-2" />
-                          Add Contact
+                          <ApperIcon name={isEditMode ? "Save" : "UserPlus"} className="h-4 w-4 mr-2" />
+                          {isEditMode ? 'Update Contact' : 'Add Contact'}
                         </>
                       )}
                     </Button>
