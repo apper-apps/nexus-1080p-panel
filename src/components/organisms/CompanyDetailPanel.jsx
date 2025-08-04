@@ -341,20 +341,36 @@ const handleActivityAdded = (newActivity) => {
             </div>
           )}
 
-          {activeTab === 'activities' && (
-            <div>
+{activeTab === 'activities' && (
+            <div className="space-y-4">
               {activitiesLoading ? (
                 <div className="text-center py-8">
                   <ApperIcon name="Loader2" className="h-6 w-6 animate-spin mx-auto mb-2 text-gray-400" />
                   <p className="text-sm text-gray-500">Loading activities...</p>
                 </div>
-              ) : (
+              ) : activities && activities.length > 0 ? (
                 <ActivityTimeline
                   entityType="company"
                   entityId={company.Id}
                   activities={activities}
                   onActivityUpdate={handleActivityUpdate}
                 />
+              ) : (
+                <div className="text-center py-8">
+                  <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <ApperIcon name="Clock" className="h-6 w-6 text-gray-400" />
+                  </div>
+                  <h3 className="text-sm font-medium text-gray-900 mb-1">No Activities Yet</h3>
+                  <p className="text-sm text-gray-500 mb-4">Activities will appear here when logged</p>
+                  <Button 
+                    onClick={() => setShowAddActivity(true)}
+                    variant="primary" 
+                    size="sm"
+                  >
+                    <ApperIcon name="Plus" className="h-4 w-4 mr-2" />
+                    Log First Activity
+                  </Button>
+                </div>
               )}
             </div>
           )}
