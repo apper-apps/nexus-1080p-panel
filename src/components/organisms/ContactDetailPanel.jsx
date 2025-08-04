@@ -12,15 +12,15 @@ const ContactDetailPanel = ({ contact, onClose, onEdit, onDelete }) => {
   const [activeTab, setActiveTab] = useState('details')
   const [activities, setActivities] = useState([])
   const [activitiesLoading, setActivitiesLoading] = useState(false)
-  const [showAddActivity, setShowAddActivity] = useState(false)
-
-  if (!contact) return null
+const [showAddActivity, setShowAddActivity] = useState(false)
 
   useEffect(() => {
-    if (activeTab === 'activities') {
+    if (contact && activeTab === 'activities') {
       loadActivities()
     }
-  }, [activeTab, contact.Id])
+  }, [activeTab, contact?.Id])
+
+  if (!contact) return null
 
   const loadActivities = async () => {
     try {

@@ -12,15 +12,15 @@ const CompanyDetailPanel = ({ company, contacts = [], onClose, onEdit, onDelete 
   const [activeTab, setActiveTab] = useState('details')
   const [activities, setActivities] = useState([])
   const [activitiesLoading, setActivitiesLoading] = useState(false)
-  const [showAddActivity, setShowAddActivity] = useState(false)
-
-  if (!company) return null;
+const [showAddActivity, setShowAddActivity] = useState(false)
 
   useEffect(() => {
-    if (activeTab === 'activities') {
+    if (company && activeTab === 'activities') {
       loadActivities()
     }
-  }, [activeTab, company.Id])
+  }, [activeTab, company?.Id])
+
+  if (!company) return null;
 
   const loadActivities = async () => {
     try {
