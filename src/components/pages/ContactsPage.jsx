@@ -108,32 +108,32 @@ const handlePageChange = (newPage) => {
     loadContacts(newPage)
   }
 
-  const filterContacts = useCallback(async (query, currentFilters) => {
+const filterContacts = useCallback((query, currentFilters) => {
     try {
       let results = [...contacts]
       
-      // Apply search query
+      // Apply search query - use correct field names from database schema
       if (query && query.trim()) {
         const searchTerm = query.toLowerCase().trim()
         results = results.filter(contact => 
-          contact.name.toLowerCase().includes(searchTerm) ||
-          contact.email.toLowerCase().includes(searchTerm) ||
-          (contact.company && contact.company.toLowerCase().includes(searchTerm)) ||
-          contact.phone.includes(searchTerm)
+          (contact.Name && contact.Name.toLowerCase().includes(searchTerm)) ||
+          (contact.email && contact.email.toLowerCase().includes(searchTerm)) ||
+          (contact.companyName && contact.companyName.toLowerCase().includes(searchTerm)) ||
+          (contact.phone && contact.phone.includes(searchTerm))
         )
       }
       
-      // Apply company filter
+      // Apply company filter - use companyName field from database
       if (currentFilters.company) {
         results = results.filter(contact =>
-          contact.company && contact.company.toLowerCase().includes(currentFilters.company.toLowerCase())
+          contact.companyName && contact.companyName.toLowerCase().includes(currentFilters.company.toLowerCase())
         )
       }
       
-      // Apply job title filter (using notes field as proxy)
+      // Apply job title filter - use jobTitle field from database
       if (currentFilters.jobTitle) {
         results = results.filter(contact =>
-          contact.notes && contact.notes.toLowerCase().includes(currentFilters.jobTitle.toLowerCase())
+          contact.jobTitle && contact.jobTitle.toLowerCase().includes(currentFilters.jobTitle.toLowerCase())
         )
       }
       
@@ -148,38 +148,10 @@ const handlePageChange = (newPage) => {
           contact.lastContactDate && new Date(contact.lastContactDate) <= new Date(currentFilters.endDate)
         )
       }
-// Load contacts with pagination
-      const offset = (currentPage - 1) * itemsPerPage
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "email" } },
-          { field: { Name: "phone" } },
-          { field: { Name: "company" } },
-          { field: { Name: "companyName" } },
-          { field: { Name: "lastContactDate" } },
-          { field: { Name: "notes" } },
-          { field: { Name: "jobTitle" } },
-          { field: { Name: "companyId" } }
-        ],
-        pagingInfo: {
-          limit: itemsPerPage,
-          offset: offset
-        },
-        orderBy: [
-          {
-            fieldName: "Name",
-            sorttype: "ASC"
-          }
-        ]
-      }
 
-      const response = await contactService.getAll(params)
-      if (response && response.data) {
-        setContacts(response.data)
-        setFilteredContacts(response.data)
-        setTotalRecords(response.total || response.data.length)
-      }
+      // Set filtered results without making additional API calls
+      setFilteredContacts(results)
+      setTotalRecords(results.length)
     } catch (err) {
       console.error("Error filtering contacts:", err)
       toast.error("Filter failed. Please try again.")

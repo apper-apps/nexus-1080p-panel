@@ -1,9 +1,9 @@
 const tableName = 'app_contact';
 
 export const contactService = {
-  async getAll() {
+async getAll(customParams = null) {
     try {
-const params = {
+      const defaultParams = {
         fields: [
           { field: { Name: "Name" } },
           { field: { Name: "email" } },
@@ -19,6 +19,9 @@ const params = {
         ]
       };
 
+      // Merge custom params with default params
+      const params = customParams ? { ...defaultParams, ...customParams } : defaultParams;
+
       const { ApperClient } = window.ApperSDK;
       const apperClient = new ApperClient({
         apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
@@ -32,7 +35,10 @@ const params = {
         throw new Error(response.message);
       }
 
-      return response.data || [];
+      return {
+        data: response.data || [],
+        total: response.total || (response.data ? response.data.length : 0)
+      };
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error fetching contacts:", error?.response?.data?.message);
