@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
-import AdvancedSearchPanel from "@/components/molecules/AdvancedSearchPanel";
 import { contactService } from "@/services/api/contactService";
 import { companyService } from "@/services/api/companyService";
 import ApperIcon from "@/components/ApperIcon";
+import AdvancedSearchPanel from "@/components/molecules/AdvancedSearchPanel";
 import AddContactModal from "@/components/organisms/AddContactModal";
 import ContactsTable from "@/components/organisms/ContactsTable";
 import AddActivityModal from "@/components/organisms/AddActivityModal";
@@ -351,8 +351,11 @@ const handleQuickAction = (contact, actionType) => {
           </div>
         )}
       </div>
-      </>
+    </>
+  )
+}
 
+export default ContactsPage
       {/* Contact Detail Panel */}
       <AnimatePresence>
         {selectedContact && (
@@ -397,8 +400,3 @@ const handleQuickAction = (contact, actionType) => {
         onActivityAdded={handleActivityAdded}
         prePopulatedData={activityPreData}
       />
-    </>
-  )
-}
-
-export default ContactsPage
