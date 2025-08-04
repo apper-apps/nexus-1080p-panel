@@ -1,0 +1,122 @@
+[
+  {
+    "Id": 1,
+    "name": "Acme Corp Website Redesign",
+    "value": 25000,
+    "contact": "John Smith",
+    "stage": "lead",
+    "createdAt": "2024-01-15T10:00:00Z",
+    "stageUpdatedAt": "2024-01-15T10:00:00Z",
+    "description": "Complete website redesign and development"
+  },
+  {
+    "Id": 2,
+    "name": "Tech Solutions CRM Implementation",
+    "value": 75000,
+    "contact": "Sarah Johnson",
+    "stage": "qualified",
+    "createdAt": "2024-01-10T14:30:00Z",
+    "stageUpdatedAt": "2024-01-18T09:15:00Z",
+    "description": "Custom CRM system implementation"
+  },
+  {
+    "Id": 3,
+    "name": "Global Inc Mobile App",
+    "value": 120000,
+    "contact": "Mike Chen",
+    "stage": "proposal",
+    "createdAt": "2024-01-05T11:20:00Z",
+    "stageUpdatedAt": "2024-01-22T16:45:00Z",
+    "description": "Native mobile application development"
+  },
+  {
+    "Id": 4,
+    "name": "StartupX MVP Development",
+    "value": 45000,
+    "contact": "Emily Davis",
+    "stage": "negotiation",
+    "createdAt": "2024-01-08T13:10:00Z",
+    "stageUpdatedAt": "2024-01-25T14:20:00Z",
+    "description": "Minimum viable product development"
+  },
+  {
+    "Id": 5,
+    "name": "Enterprise Analytics Platform",
+    "value": 200000,
+    "contact": "Robert Wilson",
+    "stage": "closed",
+    "createdAt": "2024-01-01T09:00:00Z",
+    "stageUpdatedAt": "2024-01-28T17:30:00Z",
+    "description": "Advanced analytics and reporting platform"
+  },
+  {
+    "Id": 6,
+    "name": "E-commerce Platform Upgrade",
+    "value": 65000,
+    "contact": "Lisa Brown",
+    "stage": "lead",
+    "createdAt": "2024-01-20T15:45:00Z",
+    "stageUpdatedAt": "2024-01-20T15:45:00Z",
+    "description": "Modern e-commerce platform migration"
+  },
+  {
+    "Id": 7,
+    "name": "FinTech API Integration",
+    "value": 85000,
+    "contact": "David Garcia",
+    "stage": "qualified",
+    "createdAt": "2024-01-12T10:30:00Z",
+    "stageUpdatedAt": "2024-01-19T11:15:00Z",
+    "description": "Financial services API development"
+  },
+  {
+    "Id": 8,
+    "name": "Healthcare Dashboard",
+    "value": 95000,
+    "contact": "Jennifer Lee",
+    "stage": "proposal",
+    "createdAt": "2024-01-07T14:00:00Z",
+    "stageUpdatedAt": "2024-01-23T10:30:00Z",
+    "description": "Patient management dashboard system"
+  },
+  {
+    "Id": 9,
+    "name": "Education Portal",
+    "value": 55000,
+    "contact": "Mark Thompson",
+    "stage": "negotiation",
+    "createdAt": "2024-01-14T12:20:00Z",
+    "stageUpdatedAt": "2024-01-26T15:45:00Z",
+    "description": "Online learning management system"
+  },
+  {
+    "Id": 10,
+    "name": "IoT Monitoring System",
+    "value": 110000,
+    "contact": "Amanda Martinez",
+    "stage": "closed",
+    "createdAt": "2023-12-28T08:15:00Z",
+    "stageUpdatedAt": "2024-01-27T13:20:00Z",
+    "description": "Industrial IoT monitoring and control"
+  },
+  {
+    "Id": 11,
+    "name": "Retail POS System",
+    "value": 35000,
+    "contact": "Chris Anderson",
+    "stage": "lead",
+    "createdAt": "2024-01-25T16:10:00Z",
+    "stageUpdatedAt": "2024-01-25T16:10:00Z",
+    "description": "Point of sale system modernization"
+  },
+  {
+    "Id": 12,
+    "name": "Supply Chain Optimization",
+    "value": 150000,
+    "contact": "Rachel Taylor",
+    "stage": "qualified",
+    "createdAt": "2024-01-16T09:45:00Z",
+    "stageUpdatedAt": "2024-01-21T14:30:00Z",
+    "description": "AI-powered supply chain management"
+  }
+]
