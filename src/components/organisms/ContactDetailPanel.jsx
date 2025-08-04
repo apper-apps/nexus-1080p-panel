@@ -35,7 +35,7 @@ const [showAddActivity, setShowAddActivity] = useState(false)
     }
   }
 
-  const handleActivityAdded = (newActivity) => {
+const handleActivityAdded = (newActivity) => {
     setActivities(prev => [newActivity, ...prev])
     setActiveTab('activities')
   }
@@ -46,6 +46,21 @@ const [showAddActivity, setShowAddActivity] = useState(false)
         activity.Id === updatedActivity.Id ? updatedActivity : activity
       )
     )
+  }
+
+  const getLastContact = () => {
+    if (!activities.length) return null
+    const sortedActivities = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date))
+    return sortedActivities[0]
+  }
+
+  const getNextActivity = () => {
+    if (!activities.length) return null
+    const now = new Date()
+    const upcomingActivities = activities
+      .filter(activity => new Date(activity.date) > now && (activity.type === 'task' || activity.type === 'meeting'))
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+    return upcomingActivities[0] || null
   }
 
   return (
@@ -73,8 +88,47 @@ const [showAddActivity, setShowAddActivity] = useState(false)
                 {contact.name.split(" ").map(n => n[0]).join("").toUpperCase()}
               </span>
             </div>
-            <h3 className="text-xl font-bold text-gray-900">{contact.name}</h3>
+<h3 className="text-xl font-bold text-gray-900">{contact.name}</h3>
             <p className="text-gray-600">{contact.company}</p>
+          </div>
+
+          {/* Activity Summary Cards */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <Card className="p-3">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
+                  <ApperIcon name="Calendar" className="h-4 w-4 text-blue-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-500 font-medium">Last Contact</p>
+                  {activitiesLoading ? (
+                    <div className="h-4 bg-gray-200 rounded animate-pulse mt-1"></div>
+                  ) : (
+                    <p className="text-sm font-semibold text-gray-900 truncate">
+                      {getLastContact() ? format(new Date(getLastContact().date), "MMM d") : "No activity"}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Card>
+            
+            <Card className="p-3">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center">
+                  <ApperIcon name="Clock" className="h-4 w-4 text-orange-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-500 font-medium">Next Activity</p>
+                  {activitiesLoading ? (
+                    <div className="h-4 bg-gray-200 rounded animate-pulse mt-1"></div>
+                  ) : (
+                    <p className="text-sm font-semibold text-gray-900 truncate">
+                      {getNextActivity() ? format(new Date(getNextActivity().date), "MMM d") : "None scheduled"}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Card>
           </div>
 
           {/* Action Buttons */}
