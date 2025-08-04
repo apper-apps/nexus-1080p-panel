@@ -264,7 +264,7 @@ const handleQuickAction = (contact, actionType) => {
     return <Error message={error} onRetry={loadContacts} />
   }
 
-  return (
+return (
     <>
       <div className="space-y-6">
         {/* Header */}
@@ -282,7 +282,7 @@ const handleQuickAction = (contact, actionType) => {
             variant="primary"
             className="sm:w-auto"
           >
-<ApperIcon name="UserPlus" className="h-4 w-4 mr-2" />
+            <ApperIcon name="UserPlus" className="h-4 w-4 mr-2" />
             Add Contact
           </Button>
         </div>
@@ -302,60 +302,55 @@ const handleQuickAction = (contact, actionType) => {
       {filteredContacts.length === 0 ? (
         <Empty
           title={searchQuery || Object.values(filters).some(f => f) ? "No contacts found" : "No contacts yet"}
-            description={
-              searchQuery 
-                ? `No contacts match "${searchQuery}". Try adjusting your search terms.`
-                : "Get started by adding your first contact to begin building your customer relationships."
-            }
-            actionLabel="Add First Contact"
-            onAction={() => setIsAddModalOpen(true)}
-            icon="Users"
-          />
-        ) : (
-<ContactsTable
-            contacts={filteredContacts}
-            onContactSelect={handleContactSelect}
-            selectedContact={selectedContact}
-            onEditContact={handleEditContact}
-            onDeleteContact={handleDeleteContact}
-            onCompanySelect={handleCompanySelect}
-            onQuickAction={handleQuickAction}
-          />
-        )}
+          description={
+            searchQuery 
+              ? `No contacts match "${searchQuery}". Try adjusting your search terms.`
+              : "Get started by adding your first contact to begin building your customer relationships."
+          }
+          actionLabel="Add First Contact"
+          onAction={() => setIsAddModalOpen(true)}
+          icon="Users"
+        />
+      ) : (
+        <ContactsTable
+          contacts={filteredContacts}
+          onContactSelect={handleContactSelect}
+          selectedContact={selectedContact}
+          onEditContact={handleEditContact}
+          onDeleteContact={handleDeleteContact}
+          onCompanySelect={handleCompanySelect}
+          onQuickAction={handleQuickAction}
+        />
+      )}
 
-        {/* Contact Stats */}
-        {contacts.length > 0 && (
-          <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  {contacts.length}
-                </div>
-                <div className="text-sm text-gray-600">Total Contacts</div>
+      {/* Contact Stats */}
+      {contacts.length > 0 && (
+        <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                {contacts.length}
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  {new Set(contacts.map(c => c.company)).size}
-                </div>
-                <div className="text-sm text-gray-600">Companies</div>
+              <div className="text-sm text-gray-600">Total Contacts</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                {new Set(contacts.map(c => c.company)).size}
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  {searchQuery ? filteredContacts.length : contacts.length}
-                </div>
-                <div className="text-sm text-gray-600">
-                  {searchQuery ? "Search Results" : "Active Contacts"}
-                </div>
+              <div className="text-sm text-gray-600">Companies</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                {searchQuery ? filteredContacts.length : contacts.length}
               </div>
-</div>
+              <div className="text-sm text-gray-600">
+                {searchQuery ? "Search Results" : "Active Contacts"}
+              </div>
+            </div>
           </div>
-        )}
-      </div>
-    </>
-  )
-}
+        </div>
+      )}
 
-export default ContactsPage
       {/* Contact Detail Panel */}
       <AnimatePresence>
         {selectedContact && (
@@ -369,14 +364,14 @@ export default ContactsPage
       </AnimatePresence>
 
       {/* Add Contact Modal */}
-<AddContactModal
+      <AddContactModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddContact}
         companies={companies}
       />
 
-<AddContactModal
+      <AddContactModal
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false)
@@ -387,7 +382,8 @@ export default ContactsPage
         isEditMode={true}
         companies={companies}
       />
-{/* Activity Modal */}
+
+      {/* Activity Modal */}
       <AddActivityModal
         isOpen={isActivityModalOpen}
         onClose={() => {
@@ -400,3 +396,8 @@ export default ContactsPage
         onActivityAdded={handleActivityAdded}
         prePopulatedData={activityPreData}
       />
+    </>
+  )
+}
+
+export default ContactsPage
