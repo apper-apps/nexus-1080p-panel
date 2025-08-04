@@ -1,7 +1,7 @@
-import { Card, CardContent } from "@/components/atoms/Card"
-import ApperIcon from "@/components/ApperIcon"
+import { Card, CardContent } from "@/components/atoms/Card";
+import ApperIcon from "@/components/ApperIcon";
 
-const DealCard = ({ deal }) => {
+const DealCard = ({ deal, onClick }) => {
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -32,8 +32,14 @@ const DealCard = ({ deal }) => {
 
   const daysInStage = calculateDaysInStage(deal.stageUpdatedAt)
 
-  return (
-    <Card className="cursor-move hover:shadow-md transition-shadow bg-white border border-gray-200 hover:border-gray-300">
+return (
+    <Card 
+      className="cursor-move hover:shadow-md transition-shadow bg-white border border-gray-200 hover:border-gray-300"
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick?.(deal)
+      }}
+    >
       <CardContent className="p-4">
         <div className="space-y-3">
           {/* Deal Name */}

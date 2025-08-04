@@ -3,6 +3,7 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import AddDealModal from "@/components/organisms/AddDealModal";
 import DealCard from "@/components/organisms/DealCard";
+import DealDetailPanel from "@/components/organisms/DealDetailPanel";
 import { dealService } from "@/services/api/dealService";
 import ApperIcon from "@/components/ApperIcon";
 import Loading from "@/components/ui/Loading";
@@ -20,12 +21,20 @@ const PIPELINE_STAGES = [
 ]
 
 const DealsPage = () => {
-  const [deals, setDeals] = useState([])
+const [deals, setDeals] = useState([])
   const [filteredDeals, setFilteredDeals] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [selectedDeal, setSelectedDeal] = useState(null)
+  const [filters, setFilters] = useState({
+    minValue: '',
+    maxValue: '',
+    startDate: '',
+    endDate: '',
+    contact: ''
+  })
 
   useEffect(() => {
     loadDeals()
@@ -33,7 +42,7 @@ const DealsPage = () => {
 
   useEffect(() => {
     filterDeals()
-  }, [deals, searchTerm])
+  }, [deals, searchTerm, filters])
 
   const loadDeals = async () => {
     try {
@@ -49,17 +58,67 @@ const DealsPage = () => {
     }
   }
 
-  const filterDeals = () => {
-    if (!searchTerm.trim()) {
-      setFilteredDeals(deals)
-      return
+const filterDeals = () => {
+    let filtered = [...deals]
+
+    // Search filter
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(deal =>
+        deal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        deal.contact.toLowerCase().includes(searchTerm.toLowerCase())
+      )
     }
 
-    const filtered = deals.filter(deal =>
-      deal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      deal.contact.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    // Value range filter
+    if (filters.minValue) {
+      filtered = filtered.filter(deal => deal.value >= parseInt(filters.minValue))
+    }
+    if (filters.maxValue) {
+      filtered = filtered.filter(deal => deal.value <= parseInt(filters.maxValue))
+    }
+
+    // Date range filter (using stageUpdatedAt as close date proxy)
+    if (filters.startDate) {
+      filtered = filtered.filter(deal => 
+        new Date(deal.stageUpdatedAt) >= new Date(filters.startDate)
+      )
+    }
+    if (filters.endDate) {
+      filtered = filtered.filter(deal => 
+        new Date(deal.stageUpdatedAt) <= new Date(filters.endDate)
+      )
+    }
+
+    // Contact filter
+    if (filters.contact) {
+      filtered = filtered.filter(deal =>
+        deal.contact.toLowerCase().includes(filters.contact.toLowerCase())
+      )
+    }
+
     setFilteredDeals(filtered)
+  }
+
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }))
+  }
+
+  const clearFilters = () => {
+    setFilters({
+      minValue: '',
+      maxValue: '',
+      startDate: '',
+      endDate: '',
+      contact: ''
+    })
+    setSearchTerm('')
+  }
+
+  const handleDealClick = (deal) => {
+    setSelectedDeal(deal)
   }
 
   const handleDragEnd = async (result) => {
@@ -122,7 +181,7 @@ const DealsPage = () => {
   if (error) return <Error message={error} />
 
   return (
-    <div className="space-y-6">
+<div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -152,6 +211,68 @@ const DealsPage = () => {
         </div>
       </div>
 
+      {/* Filter Controls */}
+      <Card className="p-4">
+        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 flex-1">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Min Value</label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={filters.minValue}
+                onChange={(e) => handleFilterChange('minValue', e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Max Value</label>
+              <Input
+                type="number"
+                placeholder="1000000"
+                value={filters.maxValue}
+                onChange={(e) => handleFilterChange('maxValue', e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <Input
+                type="date"
+                value={filters.startDate}
+                onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+              <Input
+                type="date"
+                value={filters.endDate}
+                onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Contact</label>
+              <Input
+                placeholder="Filter by contact..."
+                value={filters.contact}
+                onChange={(e) => handleFilterChange('contact', e.target.value)}
+                className="w-full"
+              />
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            onClick={clearFilters}
+            className="whitespace-nowrap"
+          >
+            <ApperIcon name="X" size={16} />
+            Clear Filters
+          </Button>
+        </div>
+      </Card>
       {filteredDeals.length === 0 ? (
         <Empty 
           title="No deals found"
@@ -199,7 +320,7 @@ const DealsPage = () => {
                         }`}
                         style={{ minHeight: '400px' }}
                       >
-                        {stageDeals.map((deal, index) => (
+{stageDeals.map((deal, index) => (
                           <Draggable
                             key={deal.Id}
                             draggableId={deal.Id.toString()}
@@ -214,7 +335,10 @@ const DealsPage = () => {
                                   snapshot.isDragging ? 'rotate-2 scale-105' : ''
                                 }`}
                               >
-                                <DealCard deal={deal} />
+                                <DealCard 
+                                  deal={deal} 
+                                  onClick={() => handleDealClick(deal)}
+                                />
                               </div>
                             )}
                           </Draggable>
@@ -230,11 +354,19 @@ const DealsPage = () => {
         </DragDropContext>
       )}
 
-      <AddDealModal
+<AddDealModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onAdd={handleAddDeal}
       />
+
+      {selectedDeal && (
+        <DealDetailPanel
+          deal={selectedDeal}
+          onClose={() => setSelectedDeal(null)}
+          onUpdate={loadDeals}
+        />
+      )}
     </div>
   )
 }
