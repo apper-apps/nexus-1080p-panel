@@ -231,9 +231,10 @@ const handleAddContact = async (contactData) => {
     try {
       await contactService.create(contactData)
       
-      // Reload contacts to ensure UI shows current server state
-      // This handles pagination correctly and shows the new contact
-      await loadContacts(currentPage)
+      // Navigate to page 1 to show the newly created contact
+      // New contacts appear at the beginning of the sorted list (ASC by Name)
+      setCurrentPage(1)
+      await loadContacts(1)
       
       toast.success("Contact added successfully!")
     } catch (err) {
