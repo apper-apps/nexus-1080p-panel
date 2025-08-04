@@ -146,12 +146,65 @@ async getByStage(stage) {
       .map(deal => ({ ...deal }))
   },
 
-  async getPipelineData() {
+async getPipelineData() {
     await simulateDelay()
     const stages = ['lead', 'qualified', 'proposal', 'negotiation', 'closed']
     
     return stages.map(stage => {
       return deals.filter(deal => deal.stage === stage).length
     })
+  },
+
+  async getTopContactsByValue(limit = 5) {
+    await simulateDelay()
+    
+    // Group deals by contact and calculate totals
+    const contactPerformance = {}
+    
+    deals.forEach(deal => {
+      if (deal.contact) {
+        if (!contactPerformance[deal.contact]) {
+          contactPerformance[deal.contact] = {
+            name: deal.contact,
+            company: deal.company || 'No company',
+            totalValue: 0,
+            dealCount: 0
+          }
+        }
+        contactPerformance[deal.contact].totalValue += deal.value || 0
+        contactPerformance[deal.contact].dealCount += 1
+      }
+    })
+    
+    // Convert to array and sort by total value
+    return Object.values(contactPerformance)
+      .sort((a, b) => b.totalValue - a.totalValue)
+      .slice(0, limit)
+  },
+
+  async getTopCompaniesByOpportunities(limit = 5) {
+    await simulateDelay()
+    
+    // Group deals by company and calculate totals
+    const companyPerformance = {}
+    
+    deals.forEach(deal => {
+      if (deal.company) {
+        if (!companyPerformance[deal.company]) {
+          companyPerformance[deal.company] = {
+            company: deal.company,
+            opportunityCount: 0,
+            totalValue: 0
+          }
+        }
+        companyPerformance[deal.company].opportunityCount += 1
+        companyPerformance[deal.company].totalValue += deal.value || 0
+      }
+    })
+    
+    // Convert to array and sort by opportunity count
+    return Object.values(companyPerformance)
+      .sort((a, b) => b.opportunityCount - a.opportunityCount)
+      .slice(0, limit)
   }
 }
