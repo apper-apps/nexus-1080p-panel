@@ -9,6 +9,7 @@ const navigationItems = [
   { to: "/deals", icon: "TrendingUp", label: "Deals" },
   { to: "/companies", icon: "Building2", label: "Companies" },
   { to: "/dashboard", icon: "BarChart3", label: "Dashboard" },
+  { to: "/dashboard", icon: "Activity", label: "Activity Feed" },
   { to: "/reports", icon: "FileText", label: "Reports" }
 ]
 

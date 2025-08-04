@@ -5,6 +5,7 @@ import { endOfMonth, format, startOfMonth, subDays } from "date-fns";
 import { toast } from "react-toastify";
 import { contactService } from "@/services/api/contactService";
 import { dealService } from "@/services/api/dealService";
+import { activityService } from "@/services/api/activityService";
 import ApperIcon from "@/components/ApperIcon";
 import Loading from "@/components/ui/Loading";
 import Input from "@/components/atoms/Input";
@@ -25,9 +26,10 @@ const DashboardPage = () => {
     totalContacts: 0,
     activeDeals: 0,
     monthlySalesTarget: 50000,
-    currentMonthSales: 0,
+currentMonthSales: 0,
     winRate: 0,
-    pipelineData: []
+    pipelineData: [],
+    recentActivities: []
   })
 
   // Load dashboard data
@@ -43,15 +45,17 @@ const DashboardPage = () => {
       const [
         totalContacts,
         deals,
-        pipelineData,
+pipelineData,
         winRate,
-        recentDeals
+        recentDeals,
+        recentActivities
       ] = await Promise.all([
         contactService.getTotalCount(),
         dealService.getAll(),
         dealService.getPipelineData(),
         dealService.getWinRate(),
-        dealService.getRecentDeals(30)
+        dealService.getRecentDeals(30),
+        activityService.getRecentActivities(8)
       ])
 
       // Filter deals by date range
@@ -71,9 +75,10 @@ const DashboardPage = () => {
         totalContacts,
         activeDeals: filteredDeals.filter(deal => deal.stage !== 'closed').length,
         monthlySalesTarget: 50000,
-        currentMonthSales,
+currentMonthSales,
         winRate,
-        pipelineData
+        pipelineData,
+        recentActivities
       })
 
     } catch (err) {
@@ -402,13 +407,114 @@ const DashboardPage = () => {
                 <div className="text-center text-gray-500">
                   <ApperIcon name="PieChart" className="h-12 w-12 mx-auto mb-2 opacity-50" />
                   <p>No pipeline data available</p>
-                </div>
+</div>
               )}
             </div>
             <p className="text-xs text-gray-500 text-center mt-2 flex items-center justify-center">
               <ApperIcon name="MousePointer2" className="h-3 w-3 mr-1" />
               Click segments to filter deals by stage
             </p>
+          </CardContent>
+        </Card>
+
+        {/* Recent Activity Feed */}
+        <Card className="lg:col-span-1">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <ApperIcon name="Activity" className="h-5 w-5 text-primary" />
+              Recent Activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {metrics.recentActivities.length > 0 ? (
+                metrics.recentActivities.map((activity) => {
+                  const getActivityIcon = (type) => {
+                    const icons = {
+                      call: "Phone",
+                      email: "Mail", 
+                      meeting: "Calendar",
+                      note: "FileText",
+                      task: "CheckSquare"
+                    }
+                    return icons[type] || "Activity"
+                  }
+
+                  const getActivityColor = (type) => {
+                    const colors = {
+                      call: "bg-blue-100 text-blue-600",
+                      email: "bg-purple-100 text-purple-600",
+                      meeting: "bg-orange-100 text-orange-600", 
+                      note: "bg-gray-100 text-gray-600",
+                      task: "bg-indigo-100 text-indigo-600"
+                    }
+                    return colors[type] || "bg-gray-100 text-gray-600"
+                  }
+
+                  const formatRelativeTime = (date) => {
+                    const now = new Date()
+                    const activityDate = new Date(date)
+                    const diffInHours = Math.floor((now - activityDate) / (1000 * 60 * 60))
+                    
+                    if (diffInHours < 1) return "Just now"
+                    if (diffInHours < 24) return `${diffInHours}h ago`
+                    const diffInDays = Math.floor(diffInHours / 24)
+                    if (diffInDays < 7) return `${diffInDays}d ago`
+                    return format(activityDate, 'MMM d')
+                  }
+
+                  return (
+                    <div 
+                      key={activity.Id}
+                      className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => {
+                        if (activity.entityType === 'contact') {
+                          navigate('/contacts')
+                        } else if (activity.entityType === 'deal') {
+                          navigate('/deals')
+                        }
+                      }}
+                    >
+                      <div className={`p-2 rounded-full ${getActivityColor(activity.type)}`}>
+                        <ApperIcon name={getActivityIcon(activity.type)} className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm font-medium text-gray-900 truncate">
+                            {activity.title}
+                          </h4>
+                          <span className="text-xs text-gray-500 flex-shrink-0">
+                            {formatRelativeTime(activity.date)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                          {activity.description}
+                        </p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-600">
+                            <ApperIcon 
+                              name={activity.entityType === 'contact' ? 'User' : activity.entityType === 'deal' ? 'TrendingUp' : 'Building2'} 
+                              className="h-3 w-3 mr-1" 
+                            />
+                            {activity.entityType}
+                          </span>
+                          {activity.outcome && (
+                            <span className="text-xs text-gray-500">
+                              • {activity.outcome}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })
+              ) : (
+                <div className="text-center py-8">
+                  <ApperIcon name="Activity" className="h-12 w-12 mx-auto text-gray-300 mb-3" />
+                  <p className="text-sm text-gray-500">No recent activities</p>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

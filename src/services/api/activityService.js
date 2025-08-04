@@ -71,7 +71,16 @@ export const activityService = {
       throw new Error("Activity is not a task")
     }
     activities[index].completed = completed
-    activities[index].outcome = completed ? "Completed" : "In progress"
+activities[index].outcome = completed ? "Completed" : "In progress"
     return { ...activities[index] }
+  },
+
+  async getRecentActivities(limit = 10) {
+    await delay(200)
+    // Sort all activities by date descending (newest first) and limit results
+    const sortedActivities = [...activities]
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, limit)
+    return sortedActivities
   }
 }
