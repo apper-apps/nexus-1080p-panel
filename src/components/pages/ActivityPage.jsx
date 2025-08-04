@@ -311,11 +311,13 @@ const ActivityPage = () => {
         </div>
       </div>
 
-      {/* Add Activity Modal */}
+{/* Add Activity Modal */}
       <AddActivityModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSave={handleActivityAdd}
+        onActivityAdded={handleActivityAdd}
+        entityType="general"
+        entityId={null}
         contacts={contacts}
         deals={deals}
       />

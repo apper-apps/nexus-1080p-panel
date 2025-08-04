@@ -4,7 +4,7 @@ export const activityService = {
   async getAll() {
     try {
       const params = {
-        fields: [
+fields: [
           { field: { Name: "Name" } },
           { field: { Name: "type" } },
           { field: { Name: "title" } },
@@ -15,7 +15,9 @@ export const activityService = {
           { field: { Name: "entityId" } },
           { field: { Name: "createdAt" } },
           { field: { Name: "dueDate" } },
-          { field: { Name: "completed" } }
+          { field: { Name: "completed" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } }
         ],
         orderBy: [
           {
@@ -51,7 +53,7 @@ export const activityService = {
 
   async getById(id) {
     try {
-      const params = {
+const params = {
         fields: [
           { field: { Name: "Name" } },
           { field: { Name: "type" } },
@@ -63,7 +65,9 @@ export const activityService = {
           { field: { Name: "entityId" } },
           { field: { Name: "createdAt" } },
           { field: { Name: "dueDate" } },
-          { field: { Name: "completed" } }
+          { field: { Name: "completed" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } }
         ]
       };
 
@@ -94,7 +98,7 @@ export const activityService = {
   async getByEntity(entityType, entityId) {
     try {
       const params = {
-        fields: [
+fields: [
           { field: { Name: "Name" } },
           { field: { Name: "type" } },
           { field: { Name: "title" } },
@@ -105,7 +109,9 @@ export const activityService = {
           { field: { Name: "entityId" } },
           { field: { Name: "createdAt" } },
           { field: { Name: "dueDate" } },
-          { field: { Name: "completed" } }
+          { field: { Name: "completed" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } }
         ],
         where: [
           {
@@ -365,7 +371,7 @@ export const activityService = {
 
   async getRecentActivities(limit = 10) {
     try {
-      const params = {
+const params = {
         fields: [
           { field: { Name: "Name" } },
           { field: { Name: "type" } },
@@ -377,7 +383,9 @@ export const activityService = {
           { field: { Name: "entityId" } },
           { field: { Name: "createdAt" } },
           { field: { Name: "dueDate" } },
-          { field: { Name: "completed" } }
+          { field: { Name: "completed" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } }
         ],
         orderBy: [
           {
