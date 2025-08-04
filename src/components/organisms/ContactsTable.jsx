@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { format } from "date-fns"
 import ApperIcon from "@/components/ApperIcon"
 import { cn } from "@/utils/cn"
 
-const ContactsTable = ({ contacts, onContactSelect, selectedContact, onEditContact, onDeleteContact }) => {
-  const [sortField, setSortField] = useState("name")
+const ContactsTable = ({ contacts, onContactSelect, selectedContact, onEditContact, onDeleteContact, onCompanySelect }) => {
+const [sortField, setSortField] = useState("name")
+  const [companies, setCompanies] = useState([])
   const [sortDirection, setSortDirection] = useState("asc")
 
   const handleSort = (field) => {
@@ -108,11 +109,17 @@ const ContactsTable = ({ contacts, onContactSelect, selectedContact, onEditConta
                     <div className="text-sm font-medium text-gray-900">{contact.name}</div>
                   </div>
                 </td>
-                <td 
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 cursor-pointer"
-                  onClick={() => onContactSelect(contact)}
-                >
-                  {contact.company}
+<td className="px-6 py-4 whitespace-nowrap text-sm">
+                  {contact.companyName || contact.company ? (
+                    <button
+                      onClick={() => onCompanySelect && onCompanySelect(contact.companyId || contact.company)}
+                      className="text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200 text-left"
+                    >
+                      {contact.companyName || contact.company}
+                    </button>
+                  ) : (
+                    <span className="text-gray-400">No company</span>
+                  )}
                 </td>
                 <td 
                   className="px-6 py-4 whitespace-nowrap cursor-pointer"

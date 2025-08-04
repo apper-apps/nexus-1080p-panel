@@ -11,9 +11,10 @@ import Error from "@/components/ui/Error"
 import Empty from "@/components/ui/Empty"
 import ApperIcon from "@/components/ApperIcon"
 import { contactService } from "@/services/api/contactService"
-
+import { companyService } from "@/services/api/companyService"
 const ContactsPage = () => {
 const [contacts, setContacts] = useState([])
+  const [companies, setCompanies] = useState([])
   const [filteredContacts, setFilteredContacts] = useState([])
   const [selectedContact, setSelectedContact] = useState(null)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -22,7 +23,7 @@ const [contacts, setContacts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
-  const loadContacts = async () => {
+const loadContacts = async () => {
     try {
       setLoading(true)
       setError("")
@@ -37,6 +38,15 @@ const [contacts, setContacts] = useState([])
     }
   }
 
+  const loadCompanies = async () => {
+    try {
+      const data = await companyService.getAll()
+      setCompanies(data)
+    } catch (err) {
+      console.error("Error loading companies:", err)
+    }
+  }
+
   const handleSearch = useCallback(async (query) => {
     setSearchQuery(query)
     try {
@@ -48,8 +58,41 @@ const [contacts, setContacts] = useState([])
     }
   }, [])
 
-  const handleContactSelect = (contact) => {
+const handleContactSelect = (contact) => {
     setSelectedContact(contact)
+  }
+
+  const handleCompanySelect = async (companyIdOrName) => {
+    try {
+      let company
+      if (typeof companyIdOrName === 'number') {
+        // Company ID provided
+        company = await companyService.getById(companyIdOrName)
+      } else {
+        // Company name provided (backward compatibility)
+        const allCompanies = await companyService.getAll()
+        company = allCompanies.find(c => c.name === companyIdOrName)
+      }
+      
+      if (company) {
+        // Find contacts for this company
+        const companyContacts = contacts.filter(contact => 
+          contact.companyId === company.Id || 
+          contact.company === company.name ||
+          contact.companyName === company.name
+        )
+        
+        // You can extend this to show company detail panel or navigate
+        // For now, we'll show a toast with company info
+        toast.info(`Viewing ${company.name} (${companyContacts.length} contacts)`)
+        
+        // If you have a company detail panel, you could set it here:
+        // setSelectedCompany(company)
+      }
+    } catch (err) {
+      console.error("Error loading company:", err)
+      toast.error("Failed to load company details")
+    }
   }
 
   const handleCloseDetailPanel = () => {
@@ -113,8 +156,9 @@ const handleEditContact = (contact) => {
     }
   }
 
-  useEffect(() => {
+useEffect(() => {
     loadContacts()
+    loadCompanies()
   }, [])
 
   if (loading) {
@@ -176,6 +220,7 @@ const handleEditContact = (contact) => {
             selectedContact={selectedContact}
             onEditContact={handleEditContact}
             onDeleteContact={handleDeleteContact}
+            onCompanySelect={handleCompanySelect}
           />
         )}
 
@@ -225,9 +270,10 @@ const handleEditContact = (contact) => {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddContact}
+        companies={companies}
       />
 
-      <AddContactModal
+<AddContactModal
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false)
@@ -236,6 +282,7 @@ const handleEditContact = (contact) => {
         onSubmit={handleUpdateContact}
         editingContact={editingContact}
         isEditMode={true}
+        companies={companies}
       />
     </>
   )

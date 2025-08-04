@@ -1,21 +1,46 @@
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import Button from "@/components/atoms/Button"
-import FormField from "@/components/molecules/FormField"
-import ApperIcon from "@/components/ApperIcon"
-
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-hot-toast";
+import { companyService } from "@/services/api/companyService";
+import ApperIcon from "@/components/ApperIcon";
+import FormField from "@/components/molecules/FormField";
+import Button from "@/components/atoms/Button";
 const AddContactModal = ({ isOpen, onClose, onSubmit, editingContact = null, isEditMode = false }) => {
-const [formData, setFormData] = useState({
+  const [companies, setCompanies] = useState([])
+  const [loadingCompanies, setLoadingCompanies] = useState(false)
+  const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
-    company: "",
+    companyId: null,
+    companyName: "",
     jobTitle: "",
     notes: ""
   })
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Load companies when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      loadCompanies()
+    }
+  }, [isOpen])
+
+  const loadCompanies = async () => {
+    try {
+      setLoadingCompanies(true)
+      const { companyService } = await import('@/services/api/companyService')
+      const data = await companyService.getAll()
+      setCompanies(data)
+    } catch (err) {
+      console.error("Error loading companies:", err)
+      toast.error("Failed to load companies")
+    } finally {
+      setLoadingCompanies(false)
+    }
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -25,16 +50,17 @@ const [formData, setFormData] = useState({
     }
   }
 
-// Populate form when editing
-  useState(() => {
+  // Populate form when editing
+  useEffect(() => {
     if (isEditMode && editingContact) {
-      const nameParts = editingContact.name.split(' ')
+      const nameParts = editingContact.name?.split(' ') || []
       setFormData({
         firstName: nameParts[0] || "",
         lastName: nameParts.slice(1).join(' ') || "",
         email: editingContact.email || "",
         phone: editingContact.phone || "",
-        company: editingContact.company || "",
+        companyId: editingContact.companyId || null,
+        companyName: editingContact.companyName || editingContact.company || "",
         jobTitle: editingContact.jobTitle || "",
         notes: editingContact.notes || ""
       })
@@ -44,7 +70,8 @@ const [formData, setFormData] = useState({
         lastName: "",
         email: "",
         phone: "",
-        company: "",
+        companyId: null,
+        companyName: "",
         jobTitle: "",
         notes: ""
       })
@@ -72,8 +99,8 @@ const [formData, setFormData] = useState({
       newErrors.phone = "Phone number is required"
     }
     
-    if (!formData.company.trim()) {
-      newErrors.company = "Company is required"
+if (!formData.companyId) {
+      newErrors.companyId = "Company is required"
     }
     
     setErrors(newErrors)
@@ -104,8 +131,9 @@ const handleSubmit = async (e) => {
           firstName: "",
           lastName: "",
           email: "",
-          phone: "",
-          company: "",
+phone: "",
+          companyId: null,
+          companyName: "",
           jobTitle: "",
           notes: ""
         })
@@ -127,7 +155,8 @@ const handleClose = () => {
           lastName: "",
           email: "",
           phone: "",
-          company: "",
+          companyId: null,
+          companyName: "",
           jobTitle: "",
           notes: ""
         })
@@ -223,18 +252,44 @@ const handleClose = () => {
                     disabled={isSubmitting}
                   />
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      label="Company"
-                      id="company"
-                      name="company"
-                      value={formData.company}
-                      onChange={handleChange}
-                      error={errors.company}
-                      required
-                      placeholder="Enter company name"
-                      disabled={isSubmitting}
-                    />
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label htmlFor="companyId" className="block text-sm font-medium text-gray-700">
+                        Company <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        id="companyId"
+                        name="companyId"
+                        value={formData.companyId || ''}
+                        onChange={(e) => {
+                          const selectedCompanyId = e.target.value ? parseInt(e.target.value) : null
+                          const selectedCompany = companies.find(c => c.Id === selectedCompanyId)
+                          setFormData(prev => ({
+                            ...prev,
+                            companyId: selectedCompanyId,
+                            companyName: selectedCompany ? selectedCompany.name : ""
+                          }))
+                        }}
+                        disabled={isSubmitting || loadingCompanies}
+                        className={`
+                          w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                          disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed
+                          ${errors.companyId ? 'border-red-500' : 'border-gray-300'}
+                        `}
+                      >
+                        <option value="">
+                          {loadingCompanies ? 'Loading companies...' : 'Select a company'}
+                        </option>
+                        {companies.map(company => (
+                          <option key={company.Id} value={company.Id}>
+                            {company.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.companyId && (
+                        <p className="text-red-500 text-sm mt-1">{errors.companyId}</p>
+                      )}
+                    </div>
 
                     <FormField
                       label="Job Title"
