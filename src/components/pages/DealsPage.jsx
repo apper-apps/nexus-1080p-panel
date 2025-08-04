@@ -1,50 +1,81 @@
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { toast } from "react-toastify";
-import { dealService } from "@/services/api/dealService";
-import ApperIcon from "@/components/ApperIcon";
-import DealCard from "@/components/organisms/DealCard";
-import DealDetailPanel from "@/components/organisms/DealDetailPanel";
-import AddDealModal from "@/components/organisms/AddDealModal";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import Empty from "@/components/ui/Empty";
-import Input from "@/components/atoms/Input";
-import Button from "@/components/atoms/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/Card";
+import { toast } from 'react-toastify'
+import { dealService } from '@/services/api/dealService'
+import ApperIcon from '@/components/ApperIcon'
+import DealCard from '@/components/organisms/DealCard'
+import DealDetailPanel from '@/components/organisms/DealDetailPanel'
+import AddDealModal from '@/components/organisms/AddDealModal'
+import Loading from '@/components/ui/Loading'
+import Error from '@/components/ui/Error'
+import Empty from '@/components/ui/Empty'
+import Input from '@/components/atoms/Input'
+import Button from '@/components/atoms/Button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/atoms/Card'
 
-// Error Boundary Component for Drag and Drop
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
+// Suppress react-beautiful-dnd defaultProps warning for React 18.3+ compatibility
+const originalWarn = console.warn;
+console.warn = (...args) => {
+  if (typeof args[0] === 'string' && args[0].includes('defaultProps will be removed from memo components')) {
+    return;
+  }
+  originalWarn(...args);
+};
+
+// Modern error boundary component
+function ErrorBoundary({ children, fallback }) {
+  const [hasError, setHasError] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const handleError = (event) => {
+      if (event.error?.message?.includes('drag') || event.error?.message?.includes('drop')) {
+        console.error('Drag and Drop Error:', event.error);
+        setHasError(true);
+        setError(event.error);
+        event.preventDefault();
+      }
+    };
+
+    const handlePromiseRejection = (event) => {
+      if (event.reason?.message?.includes('drag') || event.reason?.message?.includes('drop')) {
+        console.error('Drag and Drop Promise Rejection:', event.reason);
+        setHasError(true);
+        setError(event.reason);
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handlePromiseRejection);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handlePromiseRejection);
+    };
+  }, []);
+
+  const retry = useCallback(() => {
+    setHasError(false);
+    setError(null);
+  }, []);
+
+  if (hasError) {
+    return fallback || (
+      <div className="flex-1 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p className="text-red-600 text-sm">Drag and drop temporarily unavailable</p>
+        <p className="text-gray-500 text-xs mt-1">{error?.message}</p>
+        <button 
+          onClick={retry}
+          className="mt-2 px-3 py-1 bg-red-100 text-red-700 text-xs rounded hover:bg-red-200 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('Drag and Drop Error:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="flex-1 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-600 text-sm">Drag and drop temporarily unavailable</p>
-          <button 
-            onClick={() => this.setState({ hasError: false, error: null })}
-            className="mt-2 px-3 py-1 bg-red-100 text-red-700 text-xs rounded hover:bg-red-200"
-          >
-            Retry
-          </button>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
+  return children;
 }
 
 // Memoized DealCard to prevent unnecessary re-renders
@@ -358,73 +389,108 @@ const getDealsByStage = (stage) => {
                   </Card>
                   
                   <div className="flex-1">
-                    <ErrorBoundary>
-                  <Droppable droppableId={stage.id}>
-                    {(provided, snapshot) => {
-                      try {
-                        return (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            className={`flex-1 space-y-3 p-2 rounded-lg transition-colors ${
-                              snapshot.isDraggingOver 
-                                ? 'bg-blue-50 border-2 border-blue-200 border-dashed' 
-                                : 'bg-gray-50'
-                            }`}
-                            style={{ minHeight: '400px' }}
-                          >
-                            {stageDeals.map((deal, index) => {
-                              if (!deal?.Id) return null;
-                              
-                              return (
-                                <Draggable
-                                  key={deal.Id}
-                                  draggableId={deal.Id.toString()}
-                                  index={index}
-                                >
-                                  {(provided, snapshot) => {
-                                    try {
-                                      return (
-                                        <div
-                                          ref={provided.innerRef}
-                                          {...provided.draggableProps}
-                                          {...provided.dragHandleProps}
-                                          className={`transition-transform ${
-                                            snapshot.isDragging ? 'rotate-2 scale-105' : ''
-                                          }`}
-                                        >
-                                          <MemoizedDealCard 
-                                            deal={deal} 
-                                            onClick={() => handleDealClick(deal)}
-                                          />
-                                        </div>
-                                      );
-                                    } catch (error) {
-                                      console.error('Draggable render error:', error);
-                                      return (
-                                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                                          <p className="text-red-600 text-sm">Failed to render deal</p>
-                                        </div>
-                                      );
-                                    }
-                                  }}
-                                </Draggable>
-                              );
-                            })}
-                            {provided.placeholder}
+<ErrorBoundary 
+                      fallback={
+                        <div className="flex-1 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                          <p className="text-yellow-600 text-sm">Drag and drop unavailable for {stage?.name || 'this stage'}</p>
+                          <div className="mt-2 space-y-2">
+                            {stageDeals?.map((deal) => deal?.Id ? (
+                              <div key={deal.Id} className="cursor-pointer">
+                                <MemoizedDealCard 
+                                  deal={deal} 
+                                  onClick={() => handleDealClick(deal)}
+                                />
+                              </div>
+                            ) : null)}
                           </div>
-                        );
-                      } catch (error) {
-                        console.error('Droppable render error:', error);
-                        return (
-                          <div className="flex-1 p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <p className="text-red-600 text-sm">Failed to render drop zone</p>
-                          </div>
-                        );
+                        </div>
                       }
-}}
-                  </Droppable>
-                </ErrorBoundary>
+                    >
+                      <Droppable droppableId={stage?.id || `stage-${Math.random()}`}>
+                        {(provided, snapshot) => {
+                          if (!provided || !stage?.id) {
+                            return (
+                              <div className="flex-1 p-4 bg-gray-50 rounded-lg">
+                                <p className="text-gray-500 text-sm">Loading stage...</p>
+                              </div>
+                            );
+                          }
+
+                          try {
+                            return (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                                className={`flex-1 space-y-3 p-2 rounded-lg transition-colors ${
+                                  snapshot?.isDraggingOver 
+                                    ? 'bg-blue-50 border-2 border-blue-200 border-dashed' 
+                                    : 'bg-gray-50'
+                                }`}
+                                style={{ minHeight: '400px' }}
+                              >
+                                {Array.isArray(stageDeals) && stageDeals.map((deal, index) => {
+                                  if (!deal?.Id) return null;
+                                  
+                                  return (
+                                    <Draggable
+                                      key={`deal-${deal.Id}`}
+                                      draggableId={String(deal.Id)}
+                                      index={index}
+                                    >
+                                      {(provided, snapshot) => {
+                                        if (!provided) {
+                                          return (
+                                            <div className="p-4 bg-gray-100 rounded-lg">
+                                              <MemoizedDealCard 
+                                                deal={deal} 
+                                                onClick={() => handleDealClick(deal)}
+                                              />
+                                            </div>
+                                          );
+                                        }
+
+                                        try {
+                                          return (
+                                            <div
+                                              ref={provided.innerRef}
+                                              {...provided.draggableProps}
+                                              {...provided.dragHandleProps}
+                                              className={`transition-transform ${
+                                                snapshot?.isDragging ? 'rotate-2 scale-105 z-50' : ''
+                                              }`}
+                                            >
+                                              <MemoizedDealCard 
+                                                deal={deal} 
+                                                onClick={() => handleDealClick(deal)}
+                                              />
+                                            </div>
+                                          );
+                                        } catch (error) {
+                                          console.error('Draggable render error:', error);
+                                          return (
+                                            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                                              <p className="text-red-600 text-sm">Failed to render deal: {deal?.Name || 'Unknown'}</p>
+                                            </div>
+                                          );
+                                        }
+                                      }}
+                                    </Draggable>
+                                  );
+                                })}
+                                {provided.placeholder}
+                              </div>
+                            );
+                          } catch (error) {
+                            console.error('Droppable render error:', error);
+                            return (
+                              <div className="flex-1 p-4 bg-red-50 border border-red-200 rounded-lg">
+                                <p className="text-red-600 text-sm">Failed to render drop zone for {stage?.name}</p>
+                              </div>
+                            );
+                          }
+                        }}
+                      </Droppable>
+                    </ErrorBoundary>
                   </div>
                 </div>
                 );
