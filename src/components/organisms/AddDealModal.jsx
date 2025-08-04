@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/Card"
-import { Button } from "@/components/atoms/Button"
-import { Input } from "@/components/atoms/Input"
-import { Label } from "@/components/atoms/Label"
-import ApperIcon from "@/components/ApperIcon"
-import FormField from "@/components/molecules/FormField"
+import Button from "@/components/atoms/Button"
+import Input from "@/components/atoms/Input"
+import Label from "@/components/atoms/Label"
+import ApperIcon from '@/components/ApperIcon'
+import FormField from '@/components/molecules/FormField'
 
 const STAGE_OPTIONS = [
   { value: 'lead', label: 'Lead' },
