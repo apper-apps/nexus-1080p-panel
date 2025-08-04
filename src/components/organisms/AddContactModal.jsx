@@ -261,13 +261,13 @@ const handleClose = () => {
                         id="companyId"
                         name="companyId"
                         value={formData.companyId || ''}
-                        onChange={(e) => {
+onChange={(e) => {
                           const selectedCompanyId = e.target.value ? parseInt(e.target.value) : null
                           const selectedCompany = companies.find(c => c.Id === selectedCompanyId)
                           setFormData(prev => ({
                             ...prev,
                             companyId: selectedCompanyId,
-                            companyName: selectedCompany ? selectedCompany.name : ""
+                            companyName: selectedCompany ? selectedCompany.Name : ""
                           }))
                         }}
                         disabled={isSubmitting || loadingCompanies}
@@ -282,7 +282,7 @@ const handleClose = () => {
                         </option>
                         {companies.map(company => (
                           <option key={company.Id} value={company.Id}>
-                            {company.name}
+                            {company.Name}
                           </option>
                         ))}
                       </select>
