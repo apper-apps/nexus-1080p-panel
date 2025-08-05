@@ -102,7 +102,7 @@ const handleChange = (field, value) => {
   }
 
   // Load contacts and companies when modal opens
-  useEffect(() => {
+useEffect(() => {
     if (isOpen) {
       const loadData = async () => {
         setLoadingData(true)
@@ -111,8 +111,8 @@ const handleChange = (field, value) => {
             contactService.getAll(),
             companyService.getAll()
           ])
-          setContacts(contactsData)
-          setCompanies(companiesData)
+          setContacts(contactsData.data || [])
+          setCompanies(companiesData.data || [])
         } catch (error) {
           console.error('Error loading data:', error)
         } finally {
