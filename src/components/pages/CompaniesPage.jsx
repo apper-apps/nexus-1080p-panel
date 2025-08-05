@@ -68,14 +68,14 @@ const loadCompanies = useCallback(async () => {
     filterCompanies(searchQuery, newFilters);
   }, [searchQuery, filters]);
 
-  const filterCompanies = useCallback((query, currentFilters) => {
+const filterCompanies = useCallback((query, currentFilters) => {
     let results = [...companies];
     
     // Apply search query
     if (query && query.trim()) {
       const searchTerm = query.toLowerCase().trim();
       results = results.filter(company => 
-        company.name.toLowerCase().includes(searchTerm) ||
+        (company.Name && company.Name.toLowerCase().includes(searchTerm)) ||
         (company.industry && company.industry.toLowerCase().includes(searchTerm)) ||
         (company.address && company.address.toLowerCase().includes(searchTerm)) ||
         (company.description && company.description.toLowerCase().includes(searchTerm))
