@@ -118,6 +118,13 @@ const filterCompanies = useCallback((query, currentFilters) => {
 // Handle company selection for detail panel
 const handleCompanySelect = async (company) => {
     try {
+      // Validate company object has valid Id
+      if (!company || !company.Id) {
+        console.error('Invalid company object:', company);
+        toast.error('Invalid company data - please refresh the page');
+        return;
+      }
+
       // Fetch complete company details from database
       const companyDetails = await companyService.getById(company.Id);
       setSelectedCompany(companyDetails);
@@ -130,6 +137,7 @@ const handleCompanySelect = async (company) => {
       );
       setCompanyContacts(companyContactsList);
     } catch (error) {
+      console.error('Error in handleCompanySelect:', error);
       toast.error('Failed to load company details');
     }
   };
