@@ -55,10 +55,9 @@ const AddQuoteModal = ({
         contactService.getAll(),
         dealService.getAll()
       ])
-      
-      setCompanies(companiesData.data || [])
-      setContacts(contactsData.data || [])
-      setDeals(dealsData.data || [])
+setCompanies(companiesData || [])
+      setContacts(contactsData || [])
+      setDeals(dealsData || [])
     } catch (error) {
       console.error('Error loading options:', error)
       toast.error('Failed to load form options')
