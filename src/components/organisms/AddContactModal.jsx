@@ -28,12 +28,12 @@ const AddContactModal = ({ isOpen, onClose, onSubmit, editingContact = null, isE
     }
   }, [isOpen])
 
-  const loadCompanies = async () => {
+const loadCompanies = async () => {
     try {
       setLoadingCompanies(true)
       const { companyService } = await import('@/services/api/companyService')
       const data = await companyService.getAll()
-      setCompanies(data)
+      setCompanies(data.data)
     } catch (err) {
       console.error("Error loading companies:", err)
       toast.error("Failed to load companies")
