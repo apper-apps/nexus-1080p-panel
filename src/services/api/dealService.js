@@ -1,9 +1,9 @@
 const tableName = 'deal';
 
 export const dealService = {
-  async getAll() {
+async getAll() {
     try {
-const params = {
+      const params = {
         fields: [
           { field: { Name: "Id" } },
           { field: { Name: "Name" } },
