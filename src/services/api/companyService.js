@@ -41,14 +41,14 @@ const params = {
         apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
       });
 
-      const response = await apperClient.fetchRecords(tableName, params);
+const response = await apperClient.fetchRecords(tableName, params);
 
       if (!response.success) {
         console.error(response.message);
         throw new Error(response.message);
       }
 
-      return response.data || [];
+      return { data: response.data || [] };
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error fetching companies:", error?.response?.data?.message);
