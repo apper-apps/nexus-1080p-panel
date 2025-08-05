@@ -15,8 +15,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/atoms/Car
 // Suppress react-beautiful-dnd defaultProps warning for React 18.3+ compatibility
 const originalWarn = console.warn;
 console.warn = (...args) => {
-  if (typeof args[0] === 'string' && args[0].includes('defaultProps will be removed from memo components')) {
-    return;
+  // Handle React 18.3+ defaultProps deprecation warnings with component stack traces
+  if (args.length >= 1) {
+    const message = typeof args[0] === 'string' ? args[0] : String(args[0]);
+    if (message.includes('defaultProps will be removed from memo components') ||
+        (message.includes('Warning:') && args.length > 1 && 
+         typeof args[1] === 'string' && args[1].includes('defaultProps will be removed from memo components'))) {
+      return;
+    }
   }
   originalWarn(...args);
 };
