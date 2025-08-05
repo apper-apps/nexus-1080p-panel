@@ -22,8 +22,9 @@ export const industryOptions = [
 export const companyService = {
   async getAll() {
     try {
-      const params = {
+const params = {
         fields: [
+          { field: { Name: "Id" } },
           { field: { Name: "Name" } },
           { field: { Name: "industry" } },
           { field: { Name: "employeeCount" } },
