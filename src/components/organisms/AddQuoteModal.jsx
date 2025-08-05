@@ -291,89 +291,43 @@ const loadOptions = async () => {
                     disabled={loading || loadingOptions}
                   />
                   
-<div className="space-y-1">
-                    <label htmlFor="companyId" className="block text-sm font-medium text-gray-700">
-                      Company <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      id="companyId"
-                      name="companyId"
-                      value={formData.companyId}
-                      onChange={handleChange}
-                      disabled={loading || loadingOptions}
-                      className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary ${
-                        errors.companyId 
-                          ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-                          : 'border-gray-300'
-                      } ${loading || loadingOptions ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
-                    >
-                      <option value="">Select a company...</option>
-                      {companyOptions.map(option => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.companyId && (
-                      <p className="text-sm text-red-600">{errors.companyId}</p>
-                    )}
-                  </div>
+<FormField
+                    label="Company"
+                    id="companyId"
+                    name="companyId"
+                    as="select"
+                    value={formData.companyId}
+                    onChange={handleChange}
+                    options={companyOptions}
+                    error={errors.companyId}
+                    required
+                    disabled={loading || loadingOptions}
+                  />
                   
-                  <div className="space-y-1">
-                    <label htmlFor="contactId" className="block text-sm font-medium text-gray-700">
-                      Contact <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      id="contactId"
-                      name="contactId"
-                      value={formData.contactId}
-                      onChange={handleChange}
-                      disabled={loading || loadingOptions}
-                      className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary ${
-                        errors.contactId 
-                          ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-                          : 'border-gray-300'
-                      } ${loading || loadingOptions ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
-                    >
-                      <option value="">Select a contact...</option>
-                      {contactOptions.map(option => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.contactId && (
-                      <p className="text-sm text-red-600">{errors.contactId}</p>
-                    )}
-                  </div>
+                  <FormField
+                    label="Contact"
+                    id="contactId"
+                    name="contactId"
+                    as="select"
+                    value={formData.contactId}
+                    onChange={handleChange}
+                    options={contactOptions}
+                    error={errors.contactId}
+                    required
+                    disabled={loading || loadingOptions}
+                  />
                   
-                  <div className="space-y-1">
-                    <label htmlFor="dealId" className="block text-sm font-medium text-gray-700">
-                      Deal
-                    </label>
-                    <select
-                      id="dealId"
-                      name="dealId"
-                      value={formData.dealId}
-                      onChange={handleChange}
-                      disabled={loading || loadingOptions}
-                      className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary ${
-                        errors.dealId 
-                          ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-                          : 'border-gray-300'
-                      } ${loading || loadingOptions ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
-                    >
-                      <option value="">Select a deal...</option>
-                      {dealOptions.map(option => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.dealId && (
-                      <p className="text-sm text-red-600">{errors.dealId}</p>
-                    )}
-                  </div>
+                  <FormField
+                    label="Deal"
+                    id="dealId"
+                    name="dealId"
+                    as="select"
+                    value={formData.dealId}
+                    onChange={handleChange}
+                    options={dealOptions}
+                    error={errors.dealId}
+                    disabled={loading || loadingOptions}
+                  />
                   
                   <FormField
                     label="Quote Date"
