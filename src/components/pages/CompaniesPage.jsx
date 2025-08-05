@@ -116,15 +116,17 @@ const filterCompanies = useCallback((query, currentFilters) => {
   }, [companies, filterCompanies, searchQuery, filters]);
 
 // Handle company selection for detail panel
-  const handleCompanySelect = async (company) => {
+const handleCompanySelect = async (company) => {
     try {
-      setSelectedCompany(company);
+      // Fetch complete company details from database
+      const companyDetails = await companyService.getById(company.Id);
+      setSelectedCompany(companyDetails);
       setIsDetailPanelOpen(true);
       
-      // Load contacts for this company
+      // Load contacts for this company using the correct field name
       const allContacts = await contactService.getAll();
       const companyContactsList = allContacts.filter(contact => 
-        contact.company === company.name
+        contact.company === companyDetails.Name
       );
       setCompanyContacts(companyContactsList);
     } catch (error) {
