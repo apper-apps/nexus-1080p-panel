@@ -47,7 +47,7 @@ const AddQuoteModal = ({
   const [copyBillingToShipping, setCopyBillingToShipping] = useState(false)
 
   // Load dropdown options
-  const loadOptions = async () => {
+const loadOptions = async () => {
     try {
       setLoadingOptions(true)
       const [companiesData, contactsData, dealsData] = await Promise.all([
@@ -55,9 +55,9 @@ const AddQuoteModal = ({
         contactService.getAll(),
         dealService.getAll()
       ])
-setCompanies(companiesData || [])
-      setContacts(contactsData || [])
-      setDeals(dealsData || [])
+      setCompanies(companiesData?.data || [])
+      setContacts(contactsData?.data || [])
+      setDeals(dealsData?.data || [])
     } catch (error) {
       console.error('Error loading options:', error)
       toast.error('Failed to load form options')
