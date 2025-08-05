@@ -43,8 +43,10 @@ const loadCompanies = useCallback(async () => {
       setLoading(true);
       setError(null);
       const data = await companyService.getAll();
-      setCompanies(data);
-      setFilteredCompanies(data);
+      // Ensure data is always an array to prevent reduce() errors
+      const companiesArray = Array.isArray(data) ? data : [];
+      setCompanies(companiesArray);
+      setFilteredCompanies(companiesArray);
     } catch (err) {
       setError(err.message);
       toast.error('Failed to load companies');
