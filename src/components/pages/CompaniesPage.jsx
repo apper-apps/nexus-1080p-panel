@@ -129,13 +129,14 @@ const handleCompanySelect = async (company) => {
       const companyDetails = await companyService.getById(company.Id);
       setSelectedCompany(companyDetails);
       setIsDetailPanelOpen(true);
+setIsDetailPanelOpen(true);
       
       // Load contacts for this company using the correct field name
-      const allContacts = await contactService.getAll();
+      const contactsResponse = await contactService.getAll();
+      const allContacts = contactsResponse.data || [];
       const companyContactsList = allContacts.filter(contact => 
         contact.company === companyDetails.Name
       );
-      setCompanyContacts(companyContactsList);
     } catch (error) {
       console.error('Error in handleCompanySelect:', error);
       toast.error('Failed to load company details');
