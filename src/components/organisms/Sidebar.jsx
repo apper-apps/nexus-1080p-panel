@@ -25,9 +25,10 @@ const navigationItems = [
   { to: "/contacts", icon: "Users", label: "Contacts" },
   { to: "/deals", icon: "TrendingUp", label: "Deals" },
   { to: "/companies", icon: "Building2", label: "Companies" },
+  { to: "/quotes", icon: "FileText", label: "Quotes" },
   { to: "/dashboard", icon: "BarChart3", label: "Dashboard" },
   { to: "/activity", icon: "Activity", label: "Activity Feed" },
-  { to: "/reports", icon: "FileText", label: "Reports" }
+  { to: "/reports", icon: "PieChart", label: "Reports" }
 ]
 
 const Sidebar = () => {

@@ -10,6 +10,7 @@ import DealsPage from "@/components/pages/DealsPage"
 import CompaniesPage from "@/components/pages/CompaniesPage"
 import ReportsPage from "@/components/pages/ReportsPage"
 import ActivityPage from "@/components/pages/ActivityPage"
+import QuotesPage from "@/components/pages/QuotesPage"
 import Login from '@/components/pages/Login';
 import Signup from '@/components/pages/Signup';
 import Callback from '@/components/pages/Callback';
@@ -137,6 +138,7 @@ function AppContent() {
             <Route path="deals" element={<DealsPage />} />
             <Route path="companies" element={<CompaniesPage />} />
             <Route path="activity" element={<ActivityPage />} />
+<Route path="quotes" element={<QuotesPage />} />
             <Route path="reports" element={<ReportsPage />} />
           </Route>
         </Routes>
