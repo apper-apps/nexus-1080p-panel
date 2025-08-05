@@ -55,9 +55,9 @@ const loadOptions = async () => {
         contactService.getAll(),
         dealService.getAll()
       ])
-setCompanies(companiesData || [])
-      setContacts(contactsData || [])
-      setDeals(dealsData || [])
+      setCompanies(companiesData?.data || [])
+      setContacts(contactsData?.data || [])
+      setDeals(dealsData?.data || [])
     } catch (error) {
       console.error('Error loading options:', error)
       toast.error('Failed to load form options')
