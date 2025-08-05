@@ -59,10 +59,11 @@ const params = {
     }
   },
 
-  async getById(id) {
+async getById(id) {
     try {
       const params = {
         fields: [
+          { field: { Name: "Id" } },
           { field: { Name: "Name" } },
           { field: { Name: "industry" } },
           { field: { Name: "employeeCount" } },
@@ -72,7 +73,6 @@ const params = {
           { field: { Name: "contactCount" } }
         ]
       };
-
       const { ApperClient } = window.ApperSDK;
       const apperClient = new ApperClient({
         apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
